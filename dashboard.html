@@ -277,10 +277,11 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
           <div class="combined-total-item"><div class="combined-total-label">Netto</div><div class="combined-total-val" id="p-ctotal-net"></div></div>
           <div class="combined-total-item"><div class="combined-total-label">Gns. ind/mdr.</div><div class="combined-total-val pos" id="p-ctotal-avg-ind"></div></div>
           <div class="combined-total-item"><div class="combined-total-label">Gns. ud/mdr.</div><div class="combined-total-val neg" id="p-ctotal-avg-ud"></div></div>
+          <div class="combined-total-item" style="border-left:1px solid var(--line);padding-left:28px"><div class="combined-total-label">Netto pr. måned</div><div class="combined-total-val" id="p-ctotal-avg-net"></div></div>
         </div>
       </div>
       <div class="combined-chart-outer">
-        <div class="combined-chart-area"><svg class="combined-svg" id="p-combined-svg" viewBox="0 0 800 180" preserveAspectRatio="none"></svg></div>
+        <div class="combined-chart-area"><svg class="combined-svg" id="p-combined-svg" viewBox="0 0 800 200" preserveAspectRatio="none"></svg></div>
         <div class="month-labels" id="p-combined-labels"></div>
         <div class="combined-legend">
           <div class="combined-legend-item"><div class="combined-legend-line" style="background:var(--green);opacity:0.7"></div>Indbetalinger</div>
@@ -341,7 +342,7 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
     <!-- Combined virksomhed cashflow -->
     <div class="combined-section" style="padding:0 0 60px">
       <div class="combined-head">
-        <div class="combined-head-left"><span class="section-num">Samlet</span><h2>Virksomhedens cashflow</h2></div>
+        <div class="combined-head-left"><span class="section-num">Samlet</span><h2>Driftskonto cashflow</h2></div>
         <div class="combined-totals">
           <div class="combined-total-item"><div class="combined-total-label">Total ind</div><div class="combined-total-val pos" id="v-ctotal-ind"></div></div>
           <div class="combined-total-item"><div class="combined-total-label">Total ud</div><div class="combined-total-val neg" id="v-ctotal-ud"></div></div>
@@ -351,7 +352,7 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
         </div>
       </div>
       <div class="combined-chart-outer">
-        <div class="combined-chart-area"><svg class="combined-svg" id="v-combined-svg" viewBox="0 0 800 180" preserveAspectRatio="none"></svg></div>
+        <div class="combined-chart-area"><svg class="combined-svg" id="v-combined-svg" viewBox="0 0 800 200" preserveAspectRatio="none"></svg></div>
         <div class="month-labels" id="v-combined-labels"></div>
         <div class="combined-legend">
           <div class="combined-legend-item"><div class="combined-legend-line" style="background:var(--blue);opacity:0.7"></div>Omsætning ind</div>
@@ -599,28 +600,110 @@ function renderCombined(svgId, labelsId, dataMap, period, incomeColor) {
   const data=Object.values(months).sort((a,b)=>a.ym.localeCompare(b.ym));
   if(!data.length)return;
   const ns='http://www.w3.org/2000/svg';
-  const W=800,H=180,pdL=30,pdR=10,pdT=10,pdB=20;
+  const W=800,H=200,pdL=36,pdR=10,pdT=10,pdB=10;
+  const drawH=H-pdT-pdB;
   const n=data.length,barW=(W-pdL-pdR)/n,gap=barW*0.1,bw=(barW-gap*2)/2;
-  const mx=Math.max(...data.map(d=>Math.max(d.ind,d.ud)),1);
+
+  // Scale: bars use maxBar, netto line uses symmetric scale around zero
+  const nets=data.map(d=>d.ind-d.ud);
+  const maxBar=Math.max(...data.map(d=>Math.max(d.ind,d.ud)),1);
+  const maxNet=Math.max(...nets.map(Math.abs),1);
+  // We allocate top 60% of drawH for positive (bars + positive netto),
+  // bottom 40% for negative netto. Zero line sits at 60% from top.
+  const posH = drawH * 0.60;
+  const negH = drawH * 0.40;
+  const zeroY = pdT + posH; // y-coordinate of zero line
+
+  // Grid lines — positive side
   [0.25,0.5,0.75,1].forEach(f=>{
-    const y=pdT+(1-f)*(H-pdT-pdB);
+    const y=zeroY - f*posH;
     const gl=document.createElementNS(ns,'line');
-    Object.entries({x1:pdL,x2:W-pdR,y1:y,y2:y,stroke:'#d6d0c4','stroke-width':'0.5','stroke-dasharray':'3,3'}).forEach(([k,v])=>gl.setAttribute(k,v));svg.appendChild(gl);
-    const lbl=document.createElementNS(ns,'text');lbl.setAttribute('x',pdL-2);lbl.setAttribute('y',y-2);lbl.setAttribute('font-family','DM Mono,monospace');lbl.setAttribute('font-size','7');lbl.setAttribute('fill','#7a7569');lbl.setAttribute('text-anchor','end');lbl.textContent=Math.round(f*mx/1000)+'k';svg.appendChild(lbl);
+    Object.entries({x1:pdL,x2:W-pdR,y1:y,y2:y,stroke:'#d6d0c4','stroke-width':'0.4','stroke-dasharray':'3,3'}).forEach(([k,v])=>gl.setAttribute(k,v));
+    svg.appendChild(gl);
+    const lbl=document.createElementNS(ns,'text');
+    lbl.setAttribute('x',pdL-3);lbl.setAttribute('y',y+3);
+    lbl.setAttribute('font-family','DM Mono,monospace');lbl.setAttribute('font-size','7');
+    lbl.setAttribute('fill','#7a7569');lbl.setAttribute('text-anchor','end');
+    lbl.textContent=Math.round(f*maxBar/1000)+'k';
+    svg.appendChild(lbl);
   });
+
+  // Zero line (solid)
+  const zl=document.createElementNS(ns,'line');
+  Object.entries({x1:pdL,x2:W-pdR,y1:zeroY,y2:zeroY,stroke:'#7a7569','stroke-width':'1'}).forEach(([k,v])=>zl.setAttribute(k,v));
+  svg.appendChild(zl);
+  // "0" label
+  const zLbl=document.createElementNS(ns,'text');
+  zLbl.setAttribute('x',pdL-3);zLbl.setAttribute('y',zeroY+3);
+  zLbl.setAttribute('font-family','DM Mono,monospace');zLbl.setAttribute('font-size','7');
+  zLbl.setAttribute('fill','#7a7569');zLbl.setAttribute('text-anchor','end');
+  zLbl.textContent='0';svg.appendChild(zLbl);
+
+  // Negative grid
+  [-0.5,-1].forEach(f=>{
+    const y=zeroY - f*negH;
+    const gl=document.createElementNS(ns,'line');
+    Object.entries({x1:pdL,x2:W-pdR,y1:y,y2:y,stroke:'#d6d0c4','stroke-width':'0.4','stroke-dasharray':'3,3'}).forEach(([k,v])=>gl.setAttribute(k,v));
+    svg.appendChild(gl);
+    const lbl=document.createElementNS(ns,'text');
+    lbl.setAttribute('x',pdL-3);lbl.setAttribute('y',y+3);
+    lbl.setAttribute('font-family','DM Mono,monospace');lbl.setAttribute('font-size','7');
+    lbl.setAttribute('fill','#c0392b');lbl.setAttribute('text-anchor','end');
+    lbl.textContent='-'+Math.round(Math.abs(f)*maxNet/1000)+'k';
+    svg.appendChild(lbl);
+  });
+
+  // Bars (always above zero line)
   const iColor=incomeColor||'#1e6e42';
   data.forEach((d,i)=>{
     const x=pdL+i*barW+gap;
-    const hI=(d.ind/mx)*(H-pdT-pdB),hU=(d.ud/mx)*(H-pdT-pdB);
-    const rI=document.createElementNS(ns,'rect');Object.entries({x,y:H-pdB-hI,width:bw,height:Math.max(hI,0.5),fill:iColor,opacity:'0.65',rx:'1'}).forEach(([k,v])=>rI.setAttribute(k,v));svg.appendChild(rI);
-    const rU=document.createElementNS(ns,'rect');Object.entries({x:x+bw+1,y:H-pdB-hU,width:bw,height:Math.max(hU,0.5),fill:'#c0392b',opacity:'0.55',rx:'1'}).forEach(([k,v])=>rU.setAttribute(k,v));svg.appendChild(rU);
+    const hI=(d.ind/maxBar)*posH, hU=(d.ud/maxBar)*posH;
+    const rI=document.createElementNS(ns,'rect');
+    Object.entries({x,y:zeroY-hI,width:bw,height:Math.max(hI,0.5),fill:iColor,opacity:'0.65',rx:'1'}).forEach(([k,v])=>rI.setAttribute(k,v));
+    svg.appendChild(rI);
+    const rU=document.createElementNS(ns,'rect');
+    Object.entries({x:x+bw+1,y:zeroY-hU,width:bw,height:Math.max(hU,0.5),fill:'#c0392b',opacity:'0.55',rx:'1'}).forEach(([k,v])=>rU.setAttribute(k,v));
+    svg.appendChild(rU);
   });
-  const nets=data.map(d=>d.ind-d.ud),mnN=Math.min(...nets),mxN=Math.max(...nets),rngN=mxN-mnN||1;
-  const netPts=nets.map((v,i)=>{const x=pdL+i*barW+barW/2;const y=H-pdB-((v-mnN)/rngN)*(H-pdT-pdB)*0.65-(H-pdT-pdB)*0.15;return[x,y];});
+
+  // Netto line — positive above zeroY, negative below zeroY
+  const netPts=nets.map((v,i)=>{
+    const x=pdL+i*barW+barW/2;
+    const y = v>=0
+      ? zeroY - (v/maxNet)*posH
+      : zeroY + (Math.abs(v)/maxNet)*negH;
+    return [x, Math.max(pdT, Math.min(H-pdB, y))];
+  });
+
   if(netPts.length>1){
-    const poly=document.createElementNS(ns,'polyline');poly.setAttribute('points',netPts.map(p=>p.join(',')).join(' '));poly.setAttribute('fill','none');poly.setAttribute('stroke','#c9a84c');poly.setAttribute('stroke-width','2');poly.setAttribute('stroke-linejoin','round');svg.appendChild(poly);
-    netPts.forEach(([x,y])=>{const c=document.createElementNS(ns,'circle');Object.entries({cx:x,cy:y,r:'2.5',fill:'#c9a84c'}).forEach(([k,v])=>c.setAttribute(k,v));svg.appendChild(c);});
+    // Area fill — split positive/negative
+    nets.forEach((v,i)=>{
+      if(i===0)return;
+      const x0=netPts[i-1][0],y0=netPts[i-1][1];
+      const x1=netPts[i][0],  y1=netPts[i][1];
+      const col=v>=0&&nets[i-1]>=0?'#1e6e42':v<0&&nets[i-1]<0?'#c0392b':null;
+      if(col){
+        const a=document.createElementNS(ns,'polygon');
+        a.setAttribute('points',`${x0},${y0} ${x1},${y1} ${x1},${zeroY} ${x0},${zeroY}`);
+        a.setAttribute('fill',col);a.setAttribute('opacity','0.08');
+        svg.appendChild(a);
+      }
+    });
+    // Line
+    const poly=document.createElementNS(ns,'polyline');
+    poly.setAttribute('points',netPts.map(p=>p.join(',')).join(' '));
+    poly.setAttribute('fill','none');poly.setAttribute('stroke','#c9a84c');
+    poly.setAttribute('stroke-width','2');poly.setAttribute('stroke-linejoin','round');
+    poly.setAttribute('stroke-linecap','round');
+    svg.appendChild(poly);
+    // Dots — colour by sign
+    netPts.forEach(([x,y],i)=>{
+      const c=document.createElementNS(ns,'circle');
+      Object.entries({cx:x,cy:y,r:'2.8',fill:nets[i]>=0?'#c9a84c':'#c0392b'}).forEach(([k,v])=>c.setAttribute(k,v));
+      svg.appendChild(c);
+    });
   }
+
   data.forEach(d=>{const s=document.createElement('span');s.className='month-label';s.textContent=d.l;labelsEl.appendChild(s);});
   return {data, totalInd:data.reduce((s,d)=>s+d.ind,0), totalUd:data.reduce((s,d)=>s+d.ud,0)};
 }
@@ -746,6 +829,9 @@ function updatePrivat(period) {
     if(ne){ne.textContent=fmt(res.totalInd-res.totalUd);ne.className='combined-total-val '+(res.totalInd>=res.totalUd?'pos':'neg');}
     setEl('p-ctotal-avg-ind',fmt(Math.round(res.totalInd/n)));
     setEl('p-ctotal-avg-ud', fmt(Math.round(res.totalUd/n)));
+    const avgNet=Math.round((res.totalInd-res.totalUd)/n);
+    const avgNetEl=document.getElementById('p-ctotal-avg-net');
+    if(avgNetEl){avgNetEl.textContent=fmt(avgNet);avgNetEl.className='combined-total-val '+(avgNet>=0?'pos':'neg');}
   }
 }
 
@@ -785,7 +871,7 @@ function updateVirk(period) {
     if(b)setTimeout(()=>{b.style.width=(ind/maxI*75+10)+'%';},50);
   });
   // Combined
-  const res=renderCombined('v-combined-svg','v-combined-labels',VIRK,period,'#1a3a5c');
+  const res=renderCombined('v-combined-svg','v-combined-labels',{0:VIRK[0]},period,'#1a3a5c');
   if(res){
     const n=res.data.length||1;
     setEl('v-ctotal-ind',fmt(res.totalInd));
