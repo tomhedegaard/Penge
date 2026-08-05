@@ -162,7 +162,7 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
   </div>
   <div class="header-right">
     <div class="header-date">RAPPORT GENERERET</div>
-    <div class="header-period">4. marts 2026</div>
+    <div class="header-period">5. august 2026</div>
   </div>
 </header>
 <div class="gold-rule"></div>
@@ -192,7 +192,7 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
     <button class="pill" data-period="2026">2026</button>
     <button class="pill active" data-period="all">Hele perioden</button>
   </div>
-  <span class="period-range" id="period-range-label">aug 2024 – mar 2026</span>
+  <span class="period-range" id="period-range-label">aug 2024 – aug 2026</span>
 </div>
 
 <!-- ════════════════════════════════════════════
@@ -203,7 +203,7 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
     <div class="kpi-card"><div class="kpi-label">Privat 01</div><div class="kpi-name">Udlejningskonto</div><div class="kpi-saldo pos" id="p-kpi-s-0"></div><div class="kpi-sub" id="p-kpi-sub-0"></div><div class="kpi-count" id="p-kpi-c-0"></div><div class="kpi-bar" id="p-kpi-b-0" style="width:0%"></div></div>
     <div class="kpi-card"><div class="kpi-label">Privat 02</div><div class="kpi-name">Forbrugskonto</div><div class="kpi-saldo neu" id="p-kpi-s-1"></div><div class="kpi-sub" id="p-kpi-sub-1"></div><div class="kpi-count" id="p-kpi-c-1"></div><div class="kpi-bar" id="p-kpi-b-1" style="width:0%"></div></div>
     <div class="kpi-card"><div class="kpi-label">Privat 03</div><div class="kpi-name">Budgetkonto</div><div class="kpi-saldo pos" id="p-kpi-s-2"></div><div class="kpi-sub" id="p-kpi-sub-2"></div><div class="kpi-count" id="p-kpi-c-2"></div><div class="kpi-bar" id="p-kpi-b-2" style="width:0%"></div></div>
-    <div class="kpi-card"><div class="kpi-label">Privat 04</div><div class="kpi-name">Friværdikredit</div><div class="kpi-saldo pos" id="p-kpi-s-3">372.142 kr.</div><div class="kpi-sub">rådighedsbeløb</div><div class="kpi-count" id="p-kpi-c-3"></div><div class="kpi-bar" id="p-kpi-b-3" style="width:0%;background:var(--gold)"></div></div>
+    <div class="kpi-card"><div class="kpi-label">Privat 04</div><div class="kpi-name">Friværdikredit</div><div class="kpi-saldo pos" id="p-kpi-s-3">296.662 kr.</div><div class="kpi-sub">rådighedsbeløb</div><div class="kpi-count" id="p-kpi-c-3"></div><div class="kpi-bar" id="p-kpi-b-3" style="width:0%;background:var(--gold)"></div></div>
     <div class="kpi-card"><div class="kpi-label">Privat 05</div><div class="kpi-name">Hustruens konto</div><div class="kpi-saldo neu" id="p-kpi-s-4"></div><div class="kpi-sub" id="p-kpi-sub-4"></div><div class="kpi-count" id="p-kpi-c-4"></div><div class="kpi-bar" id="p-kpi-b-4" style="width:0%"></div></div>
   </div>
 
@@ -245,11 +245,11 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
       <div class="account-block">
         <div class="acc-header"><div><div class="acc-nr">XXXX 1290 70 8989</div><div class="acc-name">Friværdikredit</div></div><span class="acc-badge badge-neutral">Kredit</span></div>
         <div class="acc-stats">
-          <div><div class="stat-label">Rådighedsbeløb</div><div class="stat-val green" style="font-size:1rem;font-weight:600">372.142 kr.</div></div>
+          <div><div class="stat-label">Rådighedsbeløb</div><div class="stat-val green" style="font-size:1rem;font-weight:600">296.662 kr.</div></div>
           <div><div class="stat-label">Indbetalt</div><div class="stat-val green" id="p-ind-3"></div></div>
           <div><div class="stat-label">Udbetalt</div><div class="stat-val red" id="p-ud-3"></div></div>
         </div>
-        <div class="raadighed-box"><span class="raadighed-label">Aktuel kontosaldo</span><span class="raadighed-val">−947.858,37 kr.</span></div>
+        <div class="raadighed-box"><span class="raadighed-label">Aktuel kontosaldo</span><span class="raadighed-val">−1.023.337,55 kr.</span></div>
         <div class="chart-label">Månedlig cashflow</div>
         <div class="chart-wrap"><div class="chart-baseline"></div><div class="chart-bars" id="p-bars-3"></div></div>
         <div class="sparkline-wrap"><div class="chart-label" style="margin-top:8px">Netto pr. måned</div><svg class="sparkline" id="p-spark-3" viewBox="0 0 300 38" preserveAspectRatio="none"></svg></div>
@@ -425,7 +425,9 @@ const PRIVAT = {
     {ym:"2025-07",l:"jul 25",ind:10000, ud:10000}, {ym:"2025-08",l:"aug 25",ind:10000, ud:10000},
     {ym:"2025-09",l:"sep 25",ind:10000, ud:10000}, {ym:"2025-12",l:"dec 25",ind:30,    ud:0},
     {ym:"2026-01",l:"jan 26",ind:5985,  ud:0},     {ym:"2026-02",l:"feb 26",ind:4912,  ud:0},
-    {ym:"2026-03",l:"mar 26",ind:1904,  ud:6333},
+    {ym:"2026-03",l:"mar 26",ind:16981, ud:23333}, {ym:"2026-04",l:"apr 26",ind:7677,  ud:6500},
+    {ym:"2026-05",l:"maj 26",ind:18301, ud:14333}, {ym:"2026-06",l:"jun 26",ind:16299, ud:1710},
+    {ym:"2026-07",l:"jul 26",ind:21053, ud:16000},
   ],
   1: [ // Forbrugskonto
     {ym:"2024-06",l:"jun 24",ind:50000, ud:4974},  {ym:"2024-08",l:"aug 24",ind:55519, ud:38565},
@@ -438,7 +440,9 @@ const PRIVAT = {
     {ym:"2025-09",l:"sep 25",ind:31661, ud:54966}, {ym:"2025-10",l:"okt 25",ind:28298, ud:43127},
     {ym:"2025-11",l:"nov 25",ind:25640, ud:19404}, {ym:"2025-12",l:"dec 25",ind:20815, ud:22825},
     {ym:"2026-01",l:"jan 26",ind:53974, ud:63856}, {ym:"2026-02",l:"feb 26",ind:25000, ud:23235},
-    {ym:"2026-03",l:"mar 26",ind:0,     ud:1423},
+    {ym:"2026-03",l:"mar 26",ind:127521,ud:118382},{ym:"2026-04",l:"apr 26",ind:8147,  ud:21392},
+    {ym:"2026-05",l:"maj 26",ind:60302, ud:39774}, {ym:"2026-06",l:"jun 26",ind:3453,  ud:22667},
+    {ym:"2026-07",l:"jul 26",ind:67140, ud:42293}, {ym:"2026-08",l:"aug 26",ind:0,     ud:4823},
   ],
   2: [ // Budgetkonto
     {ym:"2024-08",l:"aug 24",ind:89859, ud:24836}, {ym:"2024-09",l:"sep 24",ind:3052,  ud:56752},
@@ -450,7 +454,10 @@ const PRIVAT = {
     {ym:"2025-08",l:"aug 25",ind:19899, ud:39363}, {ym:"2025-09",l:"sep 25",ind:24000, ud:33339},
     {ym:"2025-10",l:"okt 25",ind:35208, ud:17391}, {ym:"2025-11",l:"nov 25",ind:16000, ud:22776},
     {ym:"2025-12",l:"dec 25",ind:4891,  ud:33920}, {ym:"2026-01",l:"jan 26",ind:61782, ud:36736},
-    {ym:"2026-02",l:"feb 26",ind:24180, ud:20970}, {ym:"2026-03",l:"mar 26",ind:48,    ud:10755},
+    {ym:"2026-02",l:"feb 26",ind:24180, ud:20970}, {ym:"2026-03",l:"mar 26",ind:36048, ud:35572},
+    {ym:"2026-04",l:"apr 26",ind:18500, ud:21382}, {ym:"2026-05",l:"maj 26",ind:25000, ud:24747},
+    {ym:"2026-06",l:"jun 26",ind:15001, ud:32350}, {ym:"2026-07",l:"jul 26",ind:62392, ud:22598},
+    {ym:"2026-08",l:"aug 26",ind:0,     ud:12059},
   ],
   3: [ // Friværdikredit
     {ym:"2024-08",l:"aug 24",ind:0,     ud:29375}, {ym:"2024-09",l:"sep 24",ind:0,     ud:5111},
@@ -461,6 +468,7 @@ const PRIVAT = {
     {ym:"2025-07",l:"jul 25",ind:0,     ud:7000},  {ym:"2025-08",l:"aug 25",ind:0,     ud:25000},
     {ym:"2025-09",l:"sep 25",ind:0,     ud:60949}, {ym:"2025-11",l:"nov 25",ind:0,     ud:30000},
     {ym:"2025-12",l:"dec 25",ind:0,     ud:12108}, {ym:"2026-01",l:"jan 26",ind:0,     ud:20000},
+    {ym:"2026-03",l:"mar 26",ind:0,     ud:12501}, {ym:"2026-06",l:"jun 26",ind:0,     ud:62978},
   ],
   4: [ // Hustruens konto
     {ym:"2024-08",l:"aug 24",ind:23313, ud:0},     {ym:"2024-09",l:"sep 24",ind:17612, ud:0},
@@ -483,20 +491,27 @@ const VIRK = {
     {ym:"2025-09",l:"sep 25",ind:113130, ud:54864}, {ym:"2025-10",l:"okt 25",ind:33375,  ud:76311},
     {ym:"2025-11",l:"nov 25",ind:112209, ud:52535}, {ym:"2025-12",l:"dec 25",ind:56180,  ud:45000},
     {ym:"2026-01",l:"jan 26",ind:173659, ud:211885},{ym:"2026-02",l:"feb 26",ind:119112, ud:118813},
-    {ym:"2026-03",l:"mar 26",ind:50812,  ud:30119},
+    {ym:"2026-03",l:"mar 26",ind:124125, ud:135451},{ym:"2026-04",l:"apr 26",ind:112165, ud:85426},
+    {ym:"2026-05",l:"maj 26",ind:99757,  ud:156077},{ym:"2026-06",l:"jun 26",ind:116075, ud:99548},
+    {ym:"2026-07",l:"jul 26",ind:276610, ud:218245},{ym:"2026-08",l:"aug 26",ind:38632,  ud:47483},
   ],
   1: [ // Skattekonto
     {ym:"2025-08",l:"aug 25",ind:70000,  ud:0},     {ym:"2025-09",l:"sep 25",ind:20000,  ud:11397},
     {ym:"2025-10",l:"okt 25",ind:15000,  ud:8875},  {ym:"2025-11",l:"nov 25",ind:10000,  ud:0},
     {ym:"2025-12",l:"dec 25",ind:0,      ud:35000}, {ym:"2026-01",l:"jan 26",ind:50000,  ud:0},
-    {ym:"2026-02",l:"feb 26",ind:45000,  ud:30000}, {ym:"2026-03",l:"mar 26",ind:0,      ud:30000},
+    {ym:"2026-02",l:"feb 26",ind:45000,  ud:30000}, {ym:"2026-03",l:"mar 26",ind:0,      ud:80000},
+    {ym:"2026-05",l:"maj 26",ind:42000,  ud:0},     {ym:"2026-06",l:"jun 26",ind:20000,  ud:62085},
+    {ym:"2026-07",l:"jul 26",ind:60000,  ud:0},
   ],
   2: [ // Klientkonto
     {ym:"2025-06",l:"jun 25",ind:17188,  ud:17188}, {ym:"2025-07",l:"jul 25",ind:119247, ud:46045},
     {ym:"2025-08",l:"aug 25",ind:196775, ud:111614},{ym:"2025-09",l:"sep 25",ind:175791, ud:200416},
     {ym:"2025-10",l:"okt 25",ind:65875,  ud:37750}, {ym:"2025-11",l:"nov 25",ind:111924, ud:178806},
     {ym:"2025-12",l:"dec 25",ind:14548,  ud:0},     {ym:"2026-01",l:"jan 26",ind:235858, ud:272705},
-    {ym:"2026-02",l:"feb 26",ind:62455,  ud:72768}, {ym:"2026-03",l:"mar 26",ind:23000,  ud:20812},
+    {ym:"2026-02",l:"feb 26",ind:62455,  ud:72768}, {ym:"2026-03",l:"mar 26",ind:74250,  ud:67562},
+    {ym:"2026-04",l:"apr 26",ind:82178,  ud:32212}, {ym:"2026-05",l:"maj 26",ind:88500,  ud:136528},
+    {ym:"2026-06",l:"jun 26",ind:87551,  ud:59125}, {ym:"2026-07",l:"jul 26",ind:345212, ud:204112},
+    {ym:"2026-08",l:"aug 26",ind:75000,  ud:0},
   ]
 };
 
@@ -506,27 +521,29 @@ const LOEN = {
     {ym:"2025-07",l:"jul 25",v:30000}, {ym:"2025-08",l:"aug 25",v:30000},
     {ym:"2025-09",l:"sep 25",v:20000}, {ym:"2025-10",l:"okt 25",v:25000},
     {ym:"2026-01",l:"jan 26",v:50000}, {ym:"2026-02",l:"feb 26",v:25000},
+    {ym:"2026-03",l:"mar 26",v:25000}, {ym:"2026-05",l:"maj 26",v:60000},
+    {ym:"2026-07",l:"jul 26",v:60000},
   ],
   dina: [
     {ym:"2025-10",l:"okt 25",v:11172}, {ym:"2026-01",l:"jan 26",v:23487},
   ]
 };
 
-const SALDO_PRIVAT = {0:6498, 1:231, 2:775, 4:76};
-const SALDO_VIRK   = {0:72873, 1:94728, 2:64557};
+const SALDO_PRIVAT = {0:29362, 1:18884, 2:19716, 4:76};
+const SALDO_VIRK   = {0:77313, 1:104643, 2:315521};
 
 // ══════════════════════════════════════════════
 // HELPERS
 // ══════════════════════════════════════════════
 
 function getPeriod(p) {
-  if (p==='all')  return {from:"2000-01", to:"2099-12", label:"aug 2024 – mar 2026"};
-  if (p==='1m')   return {from:"2026-03", to:"2026-03", label:"mar 2026"};
-  if (p==='3m')   return {from:"2025-12", to:"2026-03", label:"dec 2025 – mar 2026"};
-  if (p==='6m')   return {from:"2025-09", to:"2026-03", label:"sep 2025 – mar 2026"};
+  if (p==='all')  return {from:"2000-01", to:"2099-12", label:"aug 2024 – aug 2026"};
+  if (p==='1m')   return {from:"2026-08", to:"2026-08", label:"aug 2026"};
+  if (p==='3m')   return {from:"2026-05", to:"2026-08", label:"maj – aug 2026"};
+  if (p==='6m')   return {from:"2026-02", to:"2026-08", label:"feb – aug 2026"};
   if (p==='2024') return {from:"2024-01", to:"2024-12", label:"jan – dec 2024"};
   if (p==='2025') return {from:"2025-01", to:"2025-12", label:"jan – dec 2025"};
-  if (p==='2026') return {from:"2026-01", to:"2026-12", label:"jan – mar 2026"};
+  if (p==='2026') return {from:"2026-01", to:"2026-12", label:"jan – aug 2026"};
 }
 function filterD(data, period) {
   const {from, to} = getPeriod(period);
