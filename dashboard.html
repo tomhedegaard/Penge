@@ -567,19 +567,28 @@ const SALARY = {
 const STALE_DAYS = 45;                 // konto markeres forældet efter så mange dage
 
 // Kategorier afgøres på posteringsteksten, første regel der matcher vinder.
-// Tilføj eller ret frit — rækkefølgen er prioriteten.
+// En regel med `acct` gælder kun den konto — det er mere pålideligt end tekst,
+// når kontoen i sig selv afgør sagen (alt på klientkontoen er klientmidler).
+// Tilføj eller ret frit; rækkefølgen er prioriteten.
 const CATEGORIES = [
-  {id:'skat',       label:'Skat & moms',     match:/\b(skat|moms|told)\b/i},
-  {id:'raadgiv',    label:'Revision & råd.', match:/revision|advokat|bogføring|konsulent/i},
-  {id:'bolig',      label:'Bolig',           match:/husleje|realkredit|termin|grundejer|ejendom|hofor|vand|radius|\bel\b|varme|antenne|kontorleje/i},
-  {id:'dagligvare', label:'Dagligvarer',     match:/nemlig|rema|netto\b|føtex|foetex|bilka|coop|meny|lidl|aldi|salling|brugsen|wolt|just ?eat|hobbii/i},
-  {id:'abonnement', label:'Abonnementer',    match:/spotify|netflix|hbo|viaplay|disney|apple|google|microsoft|adobe|tdc|yousee|telia|telenor|mobil/i},
-  {id:'transport',  label:'Transport',       match:/dsb|rejsekort|circle ?k|shell|q8|ok benzin|uno-?x|brobizz|parkering|taxa|færge/i},
-  {id:'forsikring', label:'Forsikring',      match:/forsikring|\btryg\b|topdanmark|alka|codan/i},
-  {id:'gebyr',      label:'Gebyrer & renter',match:/gebyr|rente|provision|\bpbs\b/i},
-  {id:'klient',     label:'Klientmidler',    match:/klient/i},
-  {id:'faktura',    label:'Fakturering',     match:/faktura|honorar/i},
-  {id:'ovrigt',     label:'Øvrigt',          match:/.*/},
+  {id:'klientmidler', label:'Klientmidler',            acct:'klient', match:/.*/},
+  {id:'skat',         label:'Skat & moms',             acct:'skat',   match:/.*/},
+  {id:'skat',         label:'Skat & moms',             match:/skattekonto|\bskat\b|moms|\btold\b|tinglys|skøde/i},
+  {id:'raadgiv',      label:'Rådgivning & kurser',     match:/revision|advokat|bogføring|konsulent|ivision|kursus|kurser/i},
+  {id:'bolig',        label:'Bolig',                   match:/husleje|realkredit|totalkredit|\btermin\b|grundejer|villakvarter|ejendom|hofor|vand|radius|varme|antenne|kontorleje|forsyning/i},
+  {id:'boligting',    label:'Byggemarked & have',      match:/johannesfog|jem ?& ?fix|silvan|bauhaus|stark\b|bygma|hornbach|plantorama/i},
+  {id:'dagligvare',   label:'Dagligvarer',             match:/nemlig|rema|netto\b|føtex|foetex|bilka|coop|meny|lidl|aldi|salling|brugsen|irma/i},
+  {id:'restaurant',   label:'Restaurant & takeaway',   match:/wolt|just ?eat|caf[eé]|restaurant|pizza|burger|sushi|kaiser/i},
+  {id:'abonnement',   label:'Abonnementer & software', match:/spotify|netflix|\bhbo\b|viaplay|disney|prime video|apple|google|microsoft|adobe|anthropic|openai|supabase|starlink|squarespace|sqsp|telmore|instantcall|tdc|yousee|telia|telenor/i},
+  {id:'netbutik',     label:'Netbutik',                match:/temu|amazon|amz\*|kickstarter|ebay|aliexpress|zalando|hobbii|refurbed/i},
+  {id:'transport',    label:'Transport',               match:/\bdsb\b|rejsekort|circle ?k|shell|\bq8\b|ok benzin|ok a\.?m\.?b\.?a|uno-?x|brobizz|parkering|taxa|færge/i},
+  {id:'forsikring',   label:'Forsikring & fagforening',match:/forsikring|\btryg\b|topdanmark|alka|codan|krifa|a-kasse|fagforening/i},
+  {id:'opsparing',    label:'Opsparing',               match:/opsparing|pension/i},
+  {id:'velgoerenhed', label:'Velgørenhed',             match:/børns vilkår|røde kors|unicef|kræftens|læger uden/i},
+  {id:'gebyr',        label:'Gebyrer & renter',        match:/gebyr|rente|provision|\bpbs\b/i},
+  {id:'bs',           label:'Betalingsservice',        match:/overførselsservice|^bs /i},
+  {id:'faktura',      label:'Fakturering',             match:/faktura|honorar|tilsvar/i},
+  {id:'ovrigt',       label:'Øvrigt',                  match:/.*/},
 ];
 const CAT_BY_ID = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
 const INTERNAL_DAYS = 3;   // modpostering må ligge så mange dage fra hinanden
@@ -595,25 +604,25 @@ const FIXED_MAX_SPREAD = 0.15; // ... og beløbet svinger under så meget (std/g
    ══════════════════════════════════════════════ */
 
 const SEED = {
-  udlejning: {"2024-09":[3823,0],"2024-10":[10000,0],"2024-11":[10000,0],"2024-12":[20028,0],"2025-01":[0,2624],"2025-02":[10000,24625],"2025-03":[13671,40273],"2025-04":[10000,10000],"2025-05":[10000,10000],"2025-06":[10000,10000],"2025-07":[10000,10000],"2025-08":[10000,10000],"2025-09":[10000,10000],"2025-12":[30,0],"2026-01":[5985,0],"2026-02":[4912,0],"2026-03":[16981,23333],"2026-04":[7677,6500],"2026-05":[18301,14333],"2026-06":[16299,1710],"2026-07":[21053,16000]},
-  forbrug:   {"2024-06":[50000,4974],"2024-08":[55519,38565],"2024-09":[28151,38316],"2024-10":[36912,59690],"2024-11":[65688,41760],"2024-12":[97,26815],"2025-01":[22870,17323],"2025-02":[53908,34314],"2025-03":[18049,16334],"2025-04":[34352,63702],"2025-05":[30675,29503],"2025-06":[20597,27766],"2025-07":[63405,39744],"2025-08":[47602,23155],"2025-09":[31661,54966],"2025-10":[28298,43127],"2025-11":[25640,19404],"2025-12":[20815,22825],"2026-01":[53974,63856],"2026-02":[25000,23235],"2026-03":[127521,118382],"2026-04":[8147,21392],"2026-05":[60302,39774],"2026-06":[3453,22667],"2026-07":[67140,42293],"2026-08":[0,4823]},
-  budget:    {"2024-08":[89859,24836],"2024-09":[3052,56752],"2024-10":[76892,36795],"2024-11":[9370,51059],"2024-12":[55280,61741],"2025-01":[40743,36266],"2025-02":[44045,23298],"2025-03":[29000,37947],"2025-04":[14000,23154],"2025-05":[54000,23706],"2025-06":[9000,38418],"2025-07":[41000,22250],"2025-08":[19899,39363],"2025-09":[24000,33339],"2025-10":[35208,17391],"2025-11":[16000,22776],"2025-12":[4891,33920],"2026-01":[61782,36736],"2026-02":[24180,20970],"2026-03":[36048,35572],"2026-04":[18500,21382],"2026-05":[25000,24747],"2026-06":[15001,32350],"2026-07":[62392,22598],"2026-08":[0,12059]},
+  udlejning: {"2024-09":[3823,0],"2024-10":[10000,0],"2024-11":[10000,0],"2024-12":[20028,0],"2025-01":[0,2624],"2025-02":[10000,24625],"2025-03":[13671,40273],"2025-04":[10000,10000],"2025-05":[10000,10000],"2025-06":[10000,10000],"2025-07":[10000,10000],"2025-08":[10000,10000],"2025-09":[10000,10000],"2025-12":[30,0],"2026-01":[5985,0],"2026-02":[4912,0],"2026-03":[16981,23333],"2026-04":[7677,6500],"2026-05":[18301,14333],"2026-06":[16299,1710],"2026-07":[21053,16000],"2026-08":[14555,285],"2026-09":[7058,0,1]},
+  forbrug:   {"2024-06":[50000,4974],"2024-08":[55519,38565],"2024-09":[28151,38316],"2024-10":[36912,59690],"2024-11":[65688,41760],"2024-12":[97,26815],"2025-01":[22870,17323],"2025-02":[53908,34314],"2025-03":[18049,16334],"2025-04":[34352,63702],"2025-05":[30675,29503],"2025-06":[20597,27766],"2025-07":[63405,39744],"2025-08":[47602,23155],"2025-09":[31661,54966],"2025-10":[28298,43127],"2025-11":[25640,19404],"2025-12":[20815,22825],"2026-01":[53974,63856],"2026-02":[25000,23235],"2026-03":[127521,118382],"2026-04":[8147,21392],"2026-05":[60302,39774],"2026-06":[3453,22667],"2026-07":[67140,42293],"2026-08":[34126,52348],"2026-09":[10012,11123,1]},
+  budget:    {"2024-08":[89859,24836],"2024-09":[3052,56752],"2024-10":[76892,36795],"2024-11":[9370,51059],"2024-12":[55280,61741],"2025-01":[40743,36266],"2025-02":[44045,23298],"2025-03":[29000,37947],"2025-04":[14000,23154],"2025-05":[54000,23706],"2025-06":[9000,38418],"2025-07":[41000,22250],"2025-08":[19899,39363],"2025-09":[24000,33339],"2025-10":[35208,17391],"2025-11":[16000,22776],"2025-12":[4891,33920],"2026-01":[61782,36736],"2026-02":[24180,20970],"2026-03":[36048,35572],"2026-04":[18500,21382],"2026-05":[25000,24747],"2026-06":[15001,32350],"2026-07":[62392,22598],"2026-08":[34000,44237],"2026-09":[0,17741,1]},
   frivaerdi: {"2024-08":[0,29375],"2024-09":[0,5111],"2024-10":[0,15000],"2024-12":[0,42776],"2025-01":[0,44465],"2025-02":[0,13857],"2025-03":[0,8415],"2025-04":[0,75000],"2025-05":[38601,65000],"2025-06":[0,49544],"2025-07":[0,7000],"2025-08":[0,25000],"2025-09":[0,60949],"2025-11":[0,30000],"2025-12":[0,12108],"2026-01":[0,20000],"2026-03":[0,12501],"2026-06":[0,62978]},
   hustru:    {"2024-08":[23313,0],"2024-09":[17612,0],"2024-10":[22715,29558],"2024-11":[18155,15310],"2024-12":[31279,19895],"2025-01":[5444,27597],"2025-02":[0,17927],"2025-03":[19378,22522],"2025-04":[3573,20444],"2025-05":[12959,17566],"2025-06":[49569,21166],"2025-07":[23859,18348],"2025-08":[1211,21945],"2025-09":[31467,35072],"2025-10":[27615,18421],"2025-11":[12563,20377],"2025-12":[1709,15868],"2026-01":[59508,30257],"2026-02":[12797,21165],"2026-03":[280,1489]},
-  drift:     {"2025-05":[48481,860],"2025-06":[58475,3873],"2025-07":[76045,83836],"2025-08":[95124,185636],"2025-09":[113130,54864],"2025-10":[33375,76311],"2025-11":[112209,52535],"2025-12":[56180,45000],"2026-01":[173659,211885],"2026-02":[119112,118813],"2026-03":[124125,135451],"2026-04":[112165,85426],"2026-05":[99757,156077],"2026-06":[116075,99548],"2026-07":[276610,218245],"2026-08":[38632,47483]},
-  skat:      {"2025-08":[70000,0],"2025-09":[20000,11397],"2025-10":[15000,8875],"2025-11":[10000,0],"2025-12":[0,35000],"2026-01":[50000,0],"2026-02":[45000,30000],"2026-03":[0,80000],"2026-05":[42000,0],"2026-06":[20000,62085],"2026-07":[60000,0]},
-  klient:    {"2025-06":[17188,17188],"2025-07":[119247,46045],"2025-08":[196775,111614],"2025-09":[175791,200416],"2025-10":[65875,37750],"2025-11":[111924,178806],"2025-12":[14548,0],"2026-01":[235858,272705],"2026-02":[62455,72768],"2026-03":[74250,67562],"2026-04":[82178,32212],"2026-05":[88500,136528],"2026-06":[87551,59125],"2026-07":[345212,204112],"2026-08":[75000,0]},
+  drift:     {"2025-05":[48481,860],"2025-06":[58475,3873],"2025-07":[76045,83836],"2025-08":[95124,185636],"2025-09":[113130,54864],"2025-10":[33375,76311],"2025-11":[112209,52535],"2025-12":[56180,45000],"2026-01":[173659,211885],"2026-02":[119112,118813],"2026-03":[124125,135451],"2026-04":[112165,85426],"2026-05":[99757,156077],"2026-06":[116075,99548],"2026-07":[276610,218245],"2026-08":[196513,183861],"2026-09":[274806,212521,1]},
+  skat:      {"2025-08":[70000,0],"2025-09":[20000,11397],"2025-10":[15000,8875],"2025-11":[10000,0],"2025-12":[0,35000],"2026-01":[50000,0],"2026-02":[45000,30000],"2026-03":[0,80000],"2026-05":[42000,0],"2026-06":[20000,62085],"2026-07":[60000,0],"2026-08":[20000,43362],"2026-09":[5000,4929,1]},
+  klient:    {"2025-06":[17188,17188],"2025-07":[119247,46045],"2025-08":[196775,111614],"2025-09":[175791,200416],"2025-10":[65875,37750],"2025-11":[111924,178806],"2025-12":[14548,0],"2026-01":[235858,272705],"2026-02":[62455,72768],"2026-03":[74250,67562],"2026-04":[82178,32212],"2026-05":[88500,136528],"2026-06":[87551,59125],"2026-07":[345212,204112],"2026-08":[383421,268239],"2026-09":[95549,236726,1]},
 };
 // Sidst kendte saldo og hvornår, fra samme eksporter.
 const SEED_SALDO = {
-  udlejning:{v:29361.84,  d:'2026-07-31'},
-  forbrug:  {v:18883.91,  d:'2026-08-04'},
-  budget:   {v:19715.56,  d:'2026-08-04'},
-  frivaerdi:{v:-1023337.55,d:'2026-06-30'},
-  hustru:   {v:76,        d:'2026-03-31'},
-  drift:    {v:77312.65,  d:'2026-08-05'},
-  skat:     {v:104642.70, d:'2026-07-30'},
-  klient:   {v:315520.50, d:'2026-08-05'},
+  udlejning:{v:50689.76, d:'2026-09-16'},
+  forbrug  :{v:4375.05, d:'2026-09-18'},
+  budget   :{v:3796.05, d:'2026-09-17'},
+  frivaerdi:{v:-1023337.55, d:'2026-06-30'},
+  hustru   :{v:76, d:'2026-03-31'},
+  drift    :{v:161100.84, d:'2026-09-18'},
+  skat     :{v:81351.67, d:'2026-09-10'},
+  klient   :{v:214525.5, d:'2026-09-18'},
 };
 const SEED_LOEN = {
   tom:    {"2025-07":30000,"2025-08":30000,"2025-09":20000,"2025-10":25000,"2026-01":50000,"2026-02":25000,"2026-03":25000,"2026-05":60000,"2026-07":60000},
@@ -749,7 +758,7 @@ function enrichTxs() {
   const byAmt = new Map();
   for (const t of Store.txs) {
     t.internal = false;
-    t.cat = (CATEGORIES.find(c => c.match.test(t.t)) || CAT_BY_ID.ovrigt).id;
+    t.cat = (CATEGORIES.find(c => (!c.acct || c.acct === t.a) && c.match.test(t.t)) || CAT_BY_ID.ovrigt).id;
     const k = Math.round(Math.abs(t.v) * 100);
     if (!byAmt.has(k)) byAmt.set(k, []);
     byAmt.get(k).push(t);
@@ -801,10 +810,11 @@ function buildModel() {
       }
     }
     // Seed udfylder alt uden import — og vinder i delvist dækkede randmåneder,
-    // hvor importen ellers ville vise en halv måned som en hel.
-    for (const [m, [ind, ud]] of Object.entries(SEED[a.id] || {})) {
+    // hvor importen ellers ville vise en halv måned som en hel. En seed-måned
+    // kan selv være delvis (tredje felt = 1); så overtager den ikke en import.
+    for (const [m, [ind, ud, part]] of Object.entries(SEED[a.id] || {})) {
       const cur = A.months[m];
-      if (!cur || cur.partial) A.months[m] = {ind, ud, src:'seed', partial:false, n:0};
+      if (!cur || (cur.partial && !part)) A.months[m] = {ind, ud, src:'seed', partial:!!part, n:0};
     }
     // Saldo: importen vinder, ellers seed.
     const seed = SEED_SALDO[a.id];
@@ -1467,8 +1477,10 @@ function renderFilters() {
     ACCOUNTS.filter(a => used.has(a.id)).map(a => `<option value="${a.id}">${a.name}</option>`).join('');
   acctSel.value = QS.acct;
   const cats = new Set(Store.txs.filter(t => !t.internal).map(t => t.cat));
+  const seen = new Set();
   catSel.innerHTML = '<option value="">Alle kategorier</option>' +
-    CATEGORIES.filter(c => cats.has(c.id)).map(c => `<option value="${c.id}">${c.label}</option>`).join('');
+    CATEGORIES.filter(c => cats.has(c.id) && !seen.has(c.id) && seen.add(c.id))
+      .map(c => `<option value="${c.id}">${c.label}</option>`).join('');
   catSel.value = QS.cat;
 }
 
