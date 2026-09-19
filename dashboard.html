@@ -7,15 +7,53 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ── DESIGNTOKENS ──────────────────────────────────────────────
+   Seriefarverne er valideret med dataviz-validatoren mod hver sin
+   flade. Lyst: ΔE 19,4 mellem ind og ud ved protanopi. Mørkt: 20,4.
+   Grøn/rød er IKKE seriefarver — de fejler CVD-testen som par (ΔE 5,1)
+   og bruges kun på tal, hvor fortegnet står der i forvejen.
+   Netto-grafen koder fortegn med position om nullinjen, ikke farve. */
 :root {
   --ink: #0e1117; --paper: #f5f2eb; --cream: #ede9df;
-  --gold: #c9a84c; --red: #c0392b; --green: #1e6e42;
-  --muted: #7a7569; --line: #d6d0c4; --blue: #1a3a5c; --blue-light: #e8eef5;
+  --muted: #7a7569; --line: #d6d0c4; --gold: #c9a84c;
+  --ser-in: #2b6ea3; --ser-out: #b8621c; --ser-net: #8a6a10;
+  --pos: #1e6e42; --neg: #c0392b;
+  --badge-bg: #e8eef5; --badge-fg: #1a3a5c;
+  --badge-gold-bg: #fdf3dc; --badge-gold-fg: #8a6a10;
+  --badge-green-bg: #d4edda; --badge-green-fg: #1e6e42;
+  --grid: #d6d0c4; --surface-ring: #f5f2eb;
   --tab-h: 52px;
+  color-scheme: light;
+}
+:root[data-theme="dark"] { color-scheme: dark; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --ink: #f0ece4; --paper: #1a1713; --cream: #221e19;
+  --muted: #a49c8d; --line: #3a342c; --gold: #d4b463;
+  --ser-in: #4a8fc4; --ser-out: #c87d2e; --ser-net: #d4b463;
+  --pos: #5cb083; --neg: #e8897a;
+  --badge-bg: #24303d; --badge-fg: #9dc0e0;
+  --badge-gold-bg: #33291a; --badge-gold-fg: #e0c47c;
+  --badge-green-bg: #1d3328; --badge-green-fg: #7cc79c;
+  --grid: #3a342c; --surface-ring: #221e19;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink: #f0ece4; --paper: #1a1713; --cream: #221e19;
+    --muted: #a49c8d; --line: #3a342c; --gold: #d4b463;
+    --ser-in: #4a8fc4; --ser-out: #c87d2e; --ser-net: #d4b463;
+    --pos: #5cb083; --neg: #e8897a;
+    --badge-bg: #24303d; --badge-fg: #9dc0e0;
+    --badge-gold-bg: #33291a; --badge-gold-fg: #e0c47c;
+    --badge-green-bg: #1d3328; --badge-green-fg: #7cc79c;
+    --grid: #3a342c; --surface-ring: #221e19;
+  }
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background:var(--paper); color:var(--ink); font-family:'Instrument Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
 body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:9999; opacity:0.6; }
+:root[data-theme="dark"] body::before { opacity:0.25; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) body::before { opacity:0.25; } }
 
 /* ── HEADER ── */
 header { padding:36px 60px 28px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:flex-end; animation:fadeDown 0.7s ease both; }
@@ -38,7 +76,7 @@ header { padding:36px 60px 28px; border-bottom:1px solid var(--line); display:fl
 /* ── PERIOD BAR ── */
 .period-bar { padding:12px 60px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:14px; background:var(--paper); }
 .period-label { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
-.period-pills { display:flex; gap:5px; }
+.period-pills { display:flex; gap:5px; flex-wrap:wrap; }
 .pill { font-family:'DM Mono',monospace; font-size:0.63rem; letter-spacing:0.06em; text-transform:uppercase; padding:4px 12px; border:1px solid var(--line); background:var(--paper); color:var(--muted); border-radius:2px; cursor:pointer; transition:all 0.15s; }
 .pill:hover { border-color:var(--gold); color:var(--ink); }
 .pill.active { background:var(--ink); color:var(--paper); border-color:var(--ink); }
@@ -53,9 +91,9 @@ header { padding:36px 60px 28px; border-bottom:1px solid var(--line); display:fl
 .dropzone:focus-visible { outline:2px solid var(--gold); outline-offset:1px; }
 .import-status { font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--muted); }
 .import-status b { color:var(--ink); font-weight:500; }
-.import-status.err { color:var(--red); }
+.import-status.err { color:var(--neg); }
 .btn-ghost { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.06em; text-transform:uppercase; padding:4px 11px; border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:2px; cursor:pointer; }
-.btn-ghost:hover { border-color:var(--red); color:var(--red); }
+.btn-ghost:hover { border-color:var(--neg); color:var(--neg); }
 .btn-ghost:focus-visible { outline:2px solid var(--gold); outline-offset:1px; }
 
 /* ── PANELS ── */
@@ -63,7 +101,7 @@ header { padding:36px 60px 28px; border-bottom:1px solid var(--line); display:fl
 .panel.active { display:block; }
 
 /* ── KPI STRIP ── */
-.kpi-strip { display:grid; border-bottom:1px solid var(--line); grid-auto-flow:column; grid-auto-columns:1fr; }
+.kpi-strip { display:grid; border-bottom:1px solid var(--line); grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); }
 .kpi-card { padding:24px 22px; border-right:1px solid var(--line); position:relative; transition:background 0.2s; }
 .kpi-card:last-child { border-right:none; }
 .kpi-card:hover { background:var(--cream); }
@@ -72,7 +110,7 @@ header { padding:36px 60px 28px; border-bottom:1px solid var(--line); display:fl
 .kpi-saldo { font-family:'DM Mono',monospace; font-size:1.15rem; font-weight:500; letter-spacing:-0.03em; }
 .kpi-sub { font-family:'DM Mono',monospace; font-size:0.57rem; color:var(--muted); margin-top:2px; }
 .kpi-count { margin-top:5px; font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--muted); }
-.pos { color:var(--green); } .neg { color:var(--red); } .neu { color:var(--ink); }
+.pos { color:var(--pos); } .neg { color:var(--neg); } .neu { color:var(--ink); }
 
 /* ── MAIN CONTENT ── */
 .content { padding:0 60px 80px; }
@@ -87,29 +125,29 @@ header { padding:36px 60px 28px; border-bottom:1px solid var(--line); display:fl
 .acc-nr { font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--muted); letter-spacing:0.1em; margin-bottom:4px; }
 .acc-name { font-family:'DM Serif Display',serif; font-size:1.15rem; }
 .acc-badge { padding:3px 9px; font-family:'DM Mono',monospace; font-size:0.57rem; letter-spacing:0.1em; text-transform:uppercase; border-radius:2px; white-space:nowrap; }
-.badge-green { background:#d4edda; color:var(--green); }
-.badge-red { background:#fde8e6; color:var(--red); }
-.badge-neutral { background:var(--blue-light); color:var(--blue); }
-.badge-gold { background:#fdf3dc; color:#8a6a10; }
+.badge-green { background:var(--badge-green-bg); color:var(--badge-green-fg); }
+.badge-red { background:var(--badge-gold-bg); color:var(--neg); }
+.badge-neutral { background:var(--badge-bg); color:var(--badge-fg); }
+.badge-gold { background:var(--badge-gold-bg); color:var(--badge-gold-fg); }
 
 .acc-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:14px; }
-.stat-label { font-family:'DM Mono',monospace; font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:2px; }
+.stat-label { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:2px; }
 .stat-val { font-family:'DM Mono',monospace; font-size:0.8rem; font-weight:500; color:var(--ink); }
-.stat-val.green { color:var(--green); } .stat-val.red { color:var(--red); }
+.stat-val.pos { color:var(--pos); } .stat-val.neg { color:var(--neg); }
 
 .avg-row { display:flex; justify-content:space-between; align-items:center; padding:6px 10px; margin-bottom:12px; background:var(--cream); border-radius:2px; border-left:2px solid var(--gold); }
-.avg-label { font-family:'DM Mono',monospace; font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
+.avg-label { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
 .avg-vals { display:flex; align-items:center; gap:4px; }
 .avg-item { font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:500; }
-.avg-item.pos { color:var(--green); } .avg-item.neg { color:var(--red); }
+.avg-item.pos { color:var(--pos); } .avg-item.neg { color:var(--neg); }
 .avg-sep { font-family:'DM Mono',monospace; font-size:0.58rem; color:var(--line); }
 
 .raadighed-box { margin-bottom:12px; padding:8px 12px; background:var(--cream); border-left:3px solid var(--gold); display:flex; justify-content:space-between; align-items:center; }
 .raadighed-label { font-family:'DM Mono',monospace; font-size:0.57rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
-.raadighed-val { font-family:'DM Mono',monospace; font-size:0.78rem; color:var(--red); }
+.raadighed-val { font-family:'DM Mono',monospace; font-size:0.78rem; color:var(--neg); }
 
-.acc-updated { font-family:'DM Mono',monospace; font-size:0.55rem; color:var(--muted); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
-.acc-updated .dot { width:6px; height:6px; border-radius:50%; background:var(--green); flex:none; }
+.acc-updated { font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--muted); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.acc-updated .dot { width:6px; height:6px; border-radius:50%; background:var(--pos); flex:none; }
 .acc-updated.stale .dot { background:var(--gold); }
 .acc-updated.stale { color:#8a6a10; }
 
@@ -143,7 +181,7 @@ header { padding:36px 60px 28px; border-bottom:1px solid var(--line); display:fl
 .cross-chart { width:100%; height:190px; overflow:visible; display:block; }
 .cross-stat-row { display:flex; justify-content:space-between; margin-top:14px; padding-top:12px; border-top:1px solid var(--line); gap:12px; }
 .cross-stat { text-align:center; }
-.cross-stat-label { font-family:'DM Mono',monospace; font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+.cross-stat-label { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
 .cross-stat-val { font-family:'DM Mono',monospace; font-size:0.88rem; font-weight:500; }
 
 .empty-note { font-family:'DM Mono',monospace; font-size:0.62rem; color:var(--muted); padding:28px; text-align:center; }
@@ -160,6 +198,76 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
 .legend-dot { display:inline-block; width:7px; height:7px; border-radius:1px; margin-right:3px; vertical-align:middle; }
 
 @keyframes fadeDown { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── TEMAKNAP ── */
+.theme-btn { margin-top:8px; font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase;
+  padding:4px 10px; border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:2px; cursor:pointer; }
+.theme-btn:hover { border-color:var(--gold); color:var(--ink); }
+.theme-btn:focus-visible { outline:2px solid var(--gold); outline-offset:1px; }
+
+/* ── GRAF / TABEL ── */
+.only-table { display:none; }
+body.view-table .only-chart { display:none; }
+body.view-table .only-table { display:block; }
+.grid-legend { margin:-12px 0 22px; padding-top:0; border-top:none; }
+.sw { display:inline-block; width:7px; height:7px; border-radius:1px; margin-right:5px; vertical-align:baseline; }
+
+.data-table { width:100%; border-collapse:collapse; font-family:'DM Mono',monospace; font-size:0.66rem; }
+.data-table th, .data-table td { padding:5px 8px; text-align:right; border-bottom:1px solid var(--line); font-weight:400; }
+.data-table thead th { color:var(--muted); font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase;
+  text-align:right; border-bottom:1px solid var(--muted); position:sticky; top:0; background:var(--paper); }
+.data-table th[scope="row"], .data-table thead th:first-child { text-align:left; color:var(--muted); white-space:nowrap; }
+.data-table td { color:var(--ink); font-variant-numeric:tabular-nums; }
+.data-table td.pos { color:var(--pos); } .data-table td.neg { color:var(--neg); }
+.data-table td.t-empty { text-align:left; color:var(--muted); font-style:italic; }
+.t-flag { font-size:0.6rem; color:var(--badge-gold-fg); background:var(--badge-gold-bg); padding:1px 5px; border-radius:2px; }
+.combined-chart-outer .data-table thead th { background:var(--cream); }
+.cross-card .data-table thead th { background:var(--cream); }
+.only-table { max-height:420px; overflow-y:auto; }
+
+/* ── RESPONSIVT ── */
+@media (max-width: 1100px) {
+  header, .tab-bar, .period-bar, .import-bar, .content, footer { padding-left:32px; padding-right:32px; }
+  .tab-btn { padding:0 16px; }
+  .kpi-card { padding:18px 16px; }
+}
+@media (max-width: 760px) {
+  header, .tab-bar, .period-bar, .import-bar, .content, footer { padding-left:20px; padding-right:20px; }
+  header { flex-direction:column; align-items:flex-start; gap:14px; padding-top:24px; padding-bottom:20px; }
+  .header-right { text-align:left; }
+  .tab-bar { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .tab-btn { padding:0 14px; flex:none; }
+  .period-bar, .import-bar { flex-wrap:wrap; gap:10px; }
+  .period-range { margin-left:0; width:100%; }
+  .dropzone { min-width:0; width:100%; flex:1 1 100%; }
+  .kpi-strip { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
+  .accounts-grid { grid-template-columns:1fr; gap:12px; }
+  .account-block { padding:20px 16px; }
+  .cross-grid { grid-template-columns:1fr; gap:16px; }
+  .cross-card { padding:20px 16px; }
+  .combined-chart-outer { padding:18px 14px 14px; }
+  .combined-head { flex-direction:column; align-items:flex-start; gap:16px; }
+  .combined-totals { justify-content:flex-start; gap:18px 22px; }
+  .combined-total-item { text-align:left; }
+  .combined-total-item[style] { border-left:none !important; padding-left:0 !important; }
+  .acc-stats { gap:8px; }
+  .avg-row { flex-direction:column; align-items:flex-start; gap:5px; }
+  .cross-stat-row { flex-wrap:wrap; gap:14px; }
+  .big-chart { height:200px; } .net-chart { height:130px; } .cross-chart { height:170px; }
+  /* Ingen tekst under ~11px på en telefon. */
+  .kpi-label, .stat-label, .chart-label, .acc-nr, .acc-badge, .avg-label,
+  .combined-total-label, .cross-stat-label, .data-table thead th, .import-label, .period-label { font-size:0.68rem; }
+  .kpi-sub, .kpi-count, .acc-updated, .cross-note, .footer-left, .footer-right, .import-status { font-size:0.66rem; }
+  .data-table { font-size:0.72rem; }
+  .pill, .btn-ghost, .theme-btn { font-size:0.7rem; padding:6px 12px; }
+  .section-head h2, .combined-head h2 { font-size:1.3rem; }
+}
+@media (max-width: 420px) {
+  header, .tab-bar, .period-bar, .import-bar, .content, footer { padding-left:16px; padding-right:16px; }
+  .kpi-strip { grid-template-columns:1fr 1fr; }
+  .acc-stats { grid-template-columns:1fr 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
 </style>
 </head>
 <body>
@@ -172,16 +280,19 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
   <div class="header-right">
     <div class="header-date">DATA OPDATERET TIL</div>
     <div class="header-period" id="data-asof">—</div>
+    <button class="theme-btn" id="theme-btn" aria-label="Skift mellem lyst og mørkt tema">
+<span id="theme-label">Tema</span>
+    </button>
   </div>
 </header>
 <div class="gold-rule"></div>
 
 <div class="tab-bar" role="tablist">
   <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="panel-privat" id="tab-privat" data-tab="privat">
-    <span class="tab-dot" style="background:var(--green)"></span>Privat
+    <span class="tab-dot" style="background:var(--ser-in)"></span>Privat
   </button>
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-virksomhed" id="tab-virksomhed" data-tab="virksomhed">
-    <span class="tab-dot" style="background:var(--blue)"></span>Virksomhed
+    <span class="tab-dot" style="background:var(--ser-out)"></span>Virksomhed
   </button>
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-tvaer" id="tab-tvaer" data-tab="tvaer">
     <span class="tab-dot" style="background:var(--gold)"></span>Tværsnit
@@ -191,6 +302,11 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
 <div class="period-bar">
   <span class="period-label">Vis periode</span>
   <div class="period-pills" id="period-pills"></div>
+  <span class="period-label" style="margin-left:10px">Visning</span>
+  <div class="period-pills" role="group" aria-label="Visning">
+    <button class="pill active" data-view="chart" aria-pressed="true">Graf</button>
+    <button class="pill" data-view="table" aria-pressed="false">Tabel</button>
+  </div>
   <span class="period-range" id="period-range-label"></span>
 </div>
 
@@ -208,6 +324,12 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
   <div class="kpi-strip" id="privat-kpi"></div>
   <div class="content">
     <div class="section-head"><span class="section-num" id="privat-count"></span><h2>Private konti</h2></div>
+    <div class="legend grid-legend">
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-in)"></div>Indbetalinger</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-out)"></div>Udbetalinger</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-net)"></div>Netto (position om nullinjen viser fortegn)</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--line)"></div>Måned uden posteringer</div>
+    </div>
     <div class="accounts-grid" id="privat-grid"></div>
     <div class="combined-section">
       <div class="combined-head">
@@ -215,15 +337,20 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
         <div class="combined-totals" id="privat-totals"></div>
       </div>
       <div class="combined-chart-outer">
-        <div class="chart-title">Ind- og udbetalinger pr. måned</div>
-        <svg class="big-chart" id="privat-cash" preserveAspectRatio="none"></svg>
-        <div class="chart-divider"></div>
-        <div class="chart-title">Netto pr. måned</div>
-        <svg class="net-chart" id="privat-net" preserveAspectRatio="none"></svg>
+        <div class="only-chart">
+          <div class="chart-title">Ind- og udbetalinger pr. måned</div>
+          <svg class="big-chart" id="privat-cash" preserveAspectRatio="none" role="img"
+               aria-label="Ind- og udbetalinger pr. måned. Samme tal findes i tabelvisningen."></svg>
+          <div class="chart-divider"></div>
+          <div class="chart-title">Netto pr. måned</div>
+          <svg class="net-chart" id="privat-net" preserveAspectRatio="none" role="img"
+               aria-label="Netto pr. måned, positiv over og negativ under nullinjen. Samme tal findes i tabelvisningen."></svg>
+        </div>
+        <div class="only-table"></div>
         <div class="legend">
-          <div class="legend-item"><div class="legend-swatch" style="background:var(--green);opacity:0.65"></div>Indbetalinger</div>
-          <div class="legend-item"><div class="legend-swatch" style="background:var(--red);opacity:0.55"></div>Udbetalinger</div>
-          <div class="legend-item"><div class="legend-swatch" style="background:var(--gold)"></div>Netto (ind − ud)</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-in)"></div>Indbetalinger</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-out)"></div>Udbetalinger</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-net)"></div>Netto (ind − ud)</div>
           <div class="legend-item"><div class="legend-swatch" style="background:var(--line)"></div>Måned uden posteringer</div>
           <div class="legend-item"><div class="legend-swatch" style="background:var(--muted);opacity:0.3"></div>Delvis måned (eksport dækker kun en del)</div>
         </div>
@@ -236,6 +363,12 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
   <div class="kpi-strip" id="virk-kpi"></div>
   <div class="content">
     <div class="section-head"><span class="section-num" id="virk-count"></span><h2>Virksomhedskonti · AL Bank</h2></div>
+    <div class="legend grid-legend">
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-in)"></div>Omsætning ind</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-out)"></div>Udgifter ud</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-net)"></div>Netto (position om nullinjen viser fortegn)</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--line)"></div>Måned uden posteringer</div>
+    </div>
     <div class="accounts-grid" id="virk-grid"></div>
     <div class="combined-section">
       <div class="combined-head">
@@ -243,15 +376,20 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
         <div class="combined-totals" id="virk-totals"></div>
       </div>
       <div class="combined-chart-outer">
-        <div class="chart-title">Omsætning ind og udgifter ud pr. måned</div>
-        <svg class="big-chart" id="virk-cash" preserveAspectRatio="none"></svg>
-        <div class="chart-divider"></div>
-        <div class="chart-title">Netto pr. måned</div>
-        <svg class="net-chart" id="virk-net" preserveAspectRatio="none"></svg>
+        <div class="only-chart">
+          <div class="chart-title">Omsætning ind og udgifter ud pr. måned</div>
+          <svg class="big-chart" id="virk-cash" preserveAspectRatio="none" role="img"
+               aria-label="Omsætning ind og udgifter ud pr. måned. Samme tal findes i tabelvisningen."></svg>
+          <div class="chart-divider"></div>
+          <div class="chart-title">Netto pr. måned</div>
+          <svg class="net-chart" id="virk-net" preserveAspectRatio="none" role="img"
+               aria-label="Netto pr. måned, positiv over og negativ under nullinjen. Samme tal findes i tabelvisningen."></svg>
+        </div>
+        <div class="only-table"></div>
         <div class="legend">
-          <div class="legend-item"><div class="legend-swatch" style="background:var(--blue);opacity:0.65"></div>Omsætning ind</div>
-          <div class="legend-item"><div class="legend-swatch" style="background:var(--red);opacity:0.55"></div>Udgifter ud</div>
-          <div class="legend-item"><div class="legend-swatch" style="background:var(--gold)"></div>Netto (ind − ud)</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-in)"></div>Omsætning ind</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-out)"></div>Udgifter ud</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-net)"></div>Netto (ind − ud)</div>
           <div class="legend-item"><div class="legend-swatch" style="background:var(--line)"></div>Måned uden posteringer</div>
           <div class="legend-item"><div class="legend-swatch" style="background:var(--muted);opacity:0.3"></div>Delvis måned (eksport dækker kun en del)</div>
         </div>
@@ -267,20 +405,24 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
       <div class="cross-card">
         <h3>Løn fra virksomhed → privat</h3>
         <div class="cross-note" id="loen-note"></div>
-        <svg class="cross-chart" id="cross-loen" preserveAspectRatio="none"></svg>
+        <div class="only-chart"><svg class="cross-chart" id="cross-loen" preserveAspectRatio="none" role="img"
+             aria-label="Løn udbetalt pr. måned fordelt på modtager. Samme tal findes i tabelvisningen."></svg></div>
+        <div class="only-table" id="loen-table"></div>
         <div class="legend" style="margin-top:10px;padding-top:10px">
-          <div class="legend-item"><div class="legend-swatch" style="background:var(--green);opacity:0.75"></div>Tom</div>
-          <div class="legend-item"><div class="legend-swatch" style="background:var(--blue);opacity:0.75"></div>Hustru</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-in)"></div>Tom</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-out)"></div>Hustru</div>
         </div>
         <div class="cross-stat-row" id="loen-stats"></div>
       </div>
       <div class="cross-card">
         <h3>Virksomhed omsætning vs. privat forbrug</h3>
         <div class="cross-note" id="omst-note"></div>
-        <svg class="cross-chart" id="cross-omst" preserveAspectRatio="none"></svg>
+        <div class="only-chart"><svg class="cross-chart" id="cross-omst" preserveAspectRatio="none" role="img"
+             aria-label="Omsætning ind mod privat forbrug ud pr. måned. Samme tal findes i tabelvisningen."></svg></div>
+        <div class="only-table" id="omst-table"></div>
         <div class="legend" style="margin-top:10px;padding-top:10px">
-          <div class="legend-item"><div class="legend-swatch" style="background:var(--blue);opacity:0.65"></div>Omsætning ind (drift)</div>
-          <div class="legend-item"><div class="legend-swatch" style="background:var(--red);opacity:0.55"></div>Privat forbrug ud</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-in)"></div>Omsætning ind (drift)</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--ser-out)"></div>Privat forbrug ud</div>
         </div>
         <div class="cross-stat-row" id="omst-stats"></div>
       </div>
@@ -293,8 +435,8 @@ footer { padding:18px 60px; border-top:1px solid var(--line); display:flex; just
 <footer>
   <div class="footer-left">Spar Nord · AL Bank · Privat &amp; Virksomhed · Anonymiseret</div>
   <div class="footer-right">
-    <span><span class="legend-dot" style="background:var(--green)"></span>Privat</span>
-    <span><span class="legend-dot" style="background:var(--blue)"></span>Virksomhed</span>
+    <span><span class="legend-dot" style="background:var(--ser-in)"></span>Privat</span>
+    <span><span class="legend-dot" style="background:var(--ser-out)"></span>Virksomhed</span>
     <span><span class="legend-dot" style="background:var(--gold)"></span>Tværsnit</span>
   </div>
 </footer>
@@ -603,13 +745,37 @@ const fmtAvg = (v, n) => n ? fmt(v) : '—';
 const fmtK = n => { const a = Math.abs(n); if (a >= 1000) return (n<0?'−':'') + Math.round(a/1000) + 'k'; return String(Math.round(n)); };
 const fmtDate = d => { const [y,m,dd] = d.split('-'); return `${+dd}. ${MON[+m-1]} ${y}`; };
 
+// ── TABELVISNING ── hver graf har en tvilling, så tallene kan læses uden farve,
+// uden mus og af en skærmlæser.
+function monthTable(rows, inL, outL) {
+  const body = rows.map(r => {
+    const net = r.ind - r.ud;
+    return `<tr><th scope="row">${r.l}${r.partial ? ' <span class="t-flag">delvis</span>' : ''}</th>` +
+      (r.has ? `<td>${fmt(r.ind)}</td><td>${fmt(r.ud)}</td><td class="${net>=0?'pos':'neg'}">${fmt(net)}</td>`
+             : `<td colspan="3" class="t-empty">ingen posteringer</td>`) + '</tr>';
+  }).join('');
+  return `<table class="data-table"><thead><tr><th scope="col">Måned</th><th scope="col">${inL}</th>
+    <th scope="col">${outL}</th><th scope="col">Netto</th></tr></thead><tbody>${body}</tbody></table>`;
+}
+function pairTable(rows, aKey, bKey, aName, bName) {
+  const body = rows.map(r =>
+    `<tr><th scope="row">${r.l}</th><td>${fmt(r[aKey])}</td><td>${fmt(r[bKey])}</td></tr>`).join('');
+  return `<table class="data-table"><thead><tr><th scope="col">Måned</th><th scope="col">${aName}</th>
+    <th scope="col">${bName}</th></tr></thead><tbody>${body}</tbody></table>`;
+}
+
 const NS = 'http://www.w3.org/2000/svg';
+// Nøgler med $ sættes som style, så de kan bruge var(--token) og følge temaet.
 function el(tag, attrs, parent) {
   const n = document.createElementNS(NS, tag);
-  for (const [k, v] of Object.entries(attrs || {})) n.setAttribute(k, v);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k[0] === '$') n.style.setProperty(k.slice(1), v);
+    else n.setAttribute(k, v);
+  }
   if (parent) parent.appendChild(n);
   return n;
 }
+const AXIS = {'font-family':'DM Mono,monospace', 'font-size':10};
 function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
 
 // Pæne akseværdier — ét fælles interval, aldrig to skalaer i samme plot.
@@ -646,7 +812,7 @@ function hoverable(node, html) {
 
 // Grupperede søjler: ind og ud på samme skala. Måneder uden data får en markør.
 function drawBars(svg, rows, opts) {
-  const o = Object.assign({w:820, h:230, padL:44, padR:8, padT:12, padB:26, inColor:'#1e6e42', outColor:'#c0392b', labelEvery:1, unit:'kr.'}, opts);
+  const o = Object.assign({w:820, h:230, padL:48, padR:8, padT:12, padB:28, labelEvery:1}, opts);
   clear(svg); svg.setAttribute('viewBox', `0 0 ${o.w} ${o.h}`);
   if (!rows.length) return;
   const plotH = o.h - o.padT - o.padB, plotW = o.w - o.padL - o.padR;
@@ -655,86 +821,95 @@ function drawBars(svg, rows, opts) {
   const y = v => o.padT + plotH - (v / hi) * plotH;
 
   for (const t of ticks) {
-    el('line', {x1:o.padL, x2:o.w-o.padR, y1:y(t), y2:y(t), stroke:'#d6d0c4', 'stroke-width':t===0?1:0.5}, svg);
-    el('text', {x:o.padL-5, y:y(t)+3, 'font-family':'DM Mono,monospace', 'font-size':8, fill:'#7a7569', 'text-anchor':'end'}, svg).textContent = fmtK(t);
+    el('line', {x1:o.padL, x2:o.w-o.padR, y1:y(t), y2:y(t), '$stroke':'var(--grid)', 'stroke-width':t===0?1:0.5}, svg);
+    el('text', Object.assign({x:o.padL-6, y:y(t)+3.5, '$fill':'var(--muted)', 'text-anchor':'end'}, AXIS), svg).textContent = fmtK(t);
   }
 
   const bw = plotW / rows.length, gap = Math.min(3, bw * 0.16), inner = (bw - gap * 2) / 2;
+  const cross = el('line', {y1:o.padT, y2:o.padT+plotH, '$stroke':'var(--ink)', 'stroke-width':0.75,
+                            opacity:0, 'pointer-events':'none'}, svg);
   rows.forEach((r, i) => {
     const x = o.padL + i * bw + gap / 2;
     if (!r.has) {
-      el('rect', {x:x, y:y(0)-2, width:Math.max(bw-gap,1), height:2, fill:'#d6d0c4'}, svg);
+      el('rect', {x, y:y(0)-2, width:Math.max(bw-gap,1), height:2, '$fill':'var(--line)'}, svg);
     } else {
-      const opacity = r.partial ? 0.35 : 1;
-      const hIn = Math.max((r.ind / hi) * plotH, r.ind > 0 ? 1 : 0);
-      const hUd = Math.max((r.ud  / hi) * plotH, r.ud  > 0 ? 1 : 0);
-      if (hIn) el('rect', {x, y:y(r.ind), width:inner, height:hIn, fill:o.inColor,  opacity:0.65*opacity, rx:1}, svg);
-      if (hUd) el('rect', {x:x+inner+2, y:y(r.ud), width:inner, height:hUd, fill:o.outColor, opacity:0.55*opacity, rx:1}, svg);
+      const op = r.partial ? 0.4 : 1;
+      const hIn = (r.ind / hi) * plotH, hUd = (r.ud / hi) * plotH;
+      if (r.ind > 0) el('rect', {x, y:y(r.ind), width:inner, height:Math.max(hIn,1), '$fill':'var(--ser-in)',  opacity:op, rx:Math.min(2, inner/2)}, svg);
+      if (r.ud  > 0) el('rect', {x:x+inner+2, y:y(r.ud), width:inner, height:Math.max(hUd,1), '$fill':'var(--ser-out)', opacity:op, rx:Math.min(2, inner/2)}, svg);
     }
-    // Hitzone over hele månedens bredde — ikke kun den tynde søjle.
+  });
+
+  // Hitzone over hele månedens bredde — ikke kun den tynde søjle.
+  rows.forEach((r, i) => {
     const hit = el('rect', {x:o.padL+i*bw, y:o.padT, width:bw, height:plotH, fill:'transparent'}, svg);
+    const cx = o.padL + i * bw + bw / 2;
+    hit.addEventListener('mouseenter', () => { cross.setAttribute('x1', cx); cross.setAttribute('x2', cx); cross.setAttribute('opacity', 0.28); });
+    hit.addEventListener('mouseleave', () => cross.setAttribute('opacity', 0));
     hoverable(hit, r.has
-      ? `<span class="t-h">${r.l}${r.partial ? ' · delvis' : ''}</span><br>Ind &nbsp;${fmt(r.ind)}<br>Ud &nbsp;&nbsp;${fmt(r.ud)}<br>Netto ${fmt(r.ind-r.ud)}`
+      ? `<span class="t-h">${r.l}${r.partial ? ' · delvis måned' : ''}</span><br>Ind &nbsp;${fmt(r.ind)}<br>Ud &nbsp;&nbsp;${fmt(r.ud)}<br>Netto ${fmt(r.ind-r.ud)}`
       : `<span class="t-h">${r.l}</span><br>Ingen posteringer`);
   });
 
   rows.forEach((r, i) => {
     if (i % o.labelEvery) return;
-    el('text', {x:o.padL + i*bw + bw/2, y:o.h - o.padB + 12, 'font-family':'DM Mono,monospace', 'font-size':8,
-                fill:'#7a7569', 'text-anchor':'middle'}, svg).textContent = r.l;
+    el('text', Object.assign({x:o.padL+i*bw+bw/2, y:o.h-o.padB+13, '$fill':'var(--muted)', 'text-anchor':'middle'}, AXIS), svg).textContent = r.l;
   });
 }
 
 // Netto som selvstændigt plot med egen mærket akse og nul-linje.
+// Fortegn kodes med POSITION om nullinjen, ikke med farve: grøn/rød er
+// ikke til at skelne ved rød-grøn-farveblindhed (ΔE 5,1).
 function drawNet(svg, rows, opts) {
-  const o = Object.assign({w:820, h:150, padL:44, padR:8, padT:12, padB:22, labelEvery:1}, opts);
+  const o = Object.assign({w:820, h:150, padL:48, padR:8, padT:12, padB:24, labelEvery:1}, opts);
   clear(svg); svg.setAttribute('viewBox', `0 0 ${o.w} ${o.h}`);
   if (!rows.length) return;
   const plotH = o.h - o.padT - o.padB, plotW = o.w - o.padL - o.padR;
   const nets = rows.map(r => r.has ? r.ind - r.ud : null);
   const vals = nets.filter(v => v !== null);
+  if (!vals.length) return;
   const {lo, hi, ticks} = niceTicks(Math.min(0, ...vals), Math.max(0, ...vals), 3);
   const y = v => o.padT + plotH - ((v - lo) / (hi - lo)) * plotH;
 
   for (const t of ticks) {
-    el('line', {x1:o.padL, x2:o.w-o.padR, y1:y(t), y2:y(t), stroke:t===0?'#7a7569':'#d6d0c4', 'stroke-width':t===0?1:0.5}, svg);
-    el('text', {x:o.padL-5, y:y(t)+3, 'font-family':'DM Mono,monospace', 'font-size':8,
-                fill:t<0?'#c0392b':'#7a7569', 'text-anchor':'end'}, svg).textContent = fmtK(t);
+    el('line', {x1:o.padL, x2:o.w-o.padR, y1:y(t), y2:y(t),
+                '$stroke':t===0?'var(--muted)':'var(--grid)', 'stroke-width':t===0?1:0.5}, svg);
+    el('text', Object.assign({x:o.padL-6, y:y(t)+3.5, '$fill':'var(--muted)', 'text-anchor':'end'}, AXIS), svg).textContent = fmtK(t);
   }
-
   const bw = plotW / rows.length;
   const pts = [];
+  const cross = el('line', {y1:o.padT, y2:o.padT+plotH, '$stroke':'var(--ink)', 'stroke-width':0.75, opacity:0, 'pointer-events':'none'}, svg);
   rows.forEach((r, i) => {
-    const cx = o.padL + i * bw + bw / 2;
-    const v = nets[i];
+    const cx = o.padL + i * bw + bw / 2, v = nets[i];
     if (v === null) return;
-    pts.push([cx, y(v), v]);
-    const h = Math.abs(y(v) - y(0));
+    pts.push([cx, y(v)]);
     el('rect', {x:cx - Math.min(bw*0.3, 7), y:Math.min(y(v), y(0)), width:Math.min(bw*0.6, 14),
-                height:Math.max(h, 1), fill:v >= 0 ? '#1e6e42' : '#c0392b', opacity:r.partial?0.2:0.45, rx:1}, svg);
+                height:Math.max(Math.abs(y(v) - y(0)), 1), '$fill':'var(--ser-net)',
+                opacity:r.partial ? 0.25 : 0.55, rx:2}, svg);
   });
-  if (pts.length > 1) {
-    el('polyline', {points:pts.map(p => `${p[0]},${p[1]}`).join(' '), fill:'none',
-                    stroke:'#c9a84c', 'stroke-width':2, 'stroke-linejoin':'round', 'stroke-linecap':'round'}, svg);
-  }
-  pts.forEach(p => el('circle', {cx:p[0], cy:p[1], r:2.8, fill:p[2] >= 0 ? '#1e6e42' : '#c0392b',
-                                 stroke:'#ede9df', 'stroke-width':1.5}, svg));
+  if (pts.length > 1)
+    el('polyline', {points:pts.map(p => p.join(',')).join(' '), fill:'none', '$stroke':'var(--ser-net)',
+                    'stroke-width':2, 'stroke-linejoin':'round', 'stroke-linecap':'round'}, svg);
+  pts.forEach(p => el('circle', {cx:p[0], cy:p[1], r:4, '$fill':'var(--ser-net)',
+                                 '$stroke':'var(--surface-ring)', 'stroke-width':2}, svg));
 
   rows.forEach((r, i) => {
     const hit = el('rect', {x:o.padL+i*bw, y:o.padT, width:bw, height:plotH, fill:'transparent'}, svg);
+    const cx = o.padL + i * bw + bw / 2;
+    hit.addEventListener('mouseenter', () => { cross.setAttribute('x1', cx); cross.setAttribute('x2', cx); cross.setAttribute('opacity', 0.28); });
+    hit.addEventListener('mouseleave', () => cross.setAttribute('opacity', 0));
     hoverable(hit, r.has
-      ? `<span class="t-h">${r.l}${r.partial ? ' · delvis' : ''}</span><br>Netto ${fmt(r.ind-r.ud)}`
+      ? `<span class="t-h">${r.l}${r.partial ? ' · delvis måned' : ''}</span><br>Netto ${fmt(r.ind-r.ud)}`
       : `<span class="t-h">${r.l}</span><br>Ingen posteringer`);
     if (i % o.labelEvery === 0)
-      el('text', {x:o.padL+i*bw+bw/2, y:o.h-o.padB+12, 'font-family':'DM Mono,monospace', 'font-size':8,
-                  fill:'#7a7569', 'text-anchor':'middle'}, svg).textContent = r.l;
+      el('text', Object.assign({x:cx, y:o.h-o.padB+13, '$fill':'var(--muted)', 'text-anchor':'middle'}, AXIS), svg).textContent = r.l;
   });
 }
 
 // To navngivne serier side om side, med akse og legend uden for SVG'en.
-function drawPair(svg, rows, aKey, bKey, aColor, bColor, aName, bName) {
+function drawPair(svg, rows, aKey, bKey, aName, bName) {
   // Bred viewBox, så teksten ikke strækkes af preserveAspectRatio="none".
-  const w = 820, h = 190, padL = 42, padR = 6, padT = 10, padB = 24;
+  const w = 820, h = 190, padL = 48, padR = 6, padT = 10, padB = 26;
   clear(svg); svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
   if (!rows.length) return;
   const plotH = h - padT - padB, plotW = w - padL - padR;
@@ -742,21 +917,27 @@ function drawPair(svg, rows, aKey, bKey, aColor, bColor, aName, bName) {
   const {hi, ticks} = niceTicks(0, max, 3);
   const y = v => padT + plotH - (v / hi) * plotH;
   for (const t of ticks) {
-    el('line', {x1:padL, x2:w-padR, y1:y(t), y2:y(t), stroke:'#d6d0c4', 'stroke-width':t===0?1:0.5}, svg);
-    el('text', {x:padL-5, y:y(t)+3, 'font-family':'DM Mono,monospace', 'font-size':8, fill:'#7a7569', 'text-anchor':'end'}, svg).textContent = fmtK(t);
+    el('line', {x1:padL, x2:w-padR, y1:y(t), y2:y(t), '$stroke':'var(--grid)', 'stroke-width':t===0?1:0.5}, svg);
+    el('text', Object.assign({x:padL-6, y:y(t)+3.5, '$fill':'var(--muted)', 'text-anchor':'end'}, AXIS), svg).textContent = fmtK(t);
   }
   const bw = plotW / rows.length, gap = Math.min(3, bw * 0.16), inner = (bw - gap * 2) / 2;
+  const cross = el('line', {y1:padT, y2:padT+plotH, '$stroke':'var(--ink)', 'stroke-width':0.75, opacity:0, 'pointer-events':'none'}, svg);
   rows.forEach((r, i) => {
     const x = padL + i * bw + gap / 2;
-    if (r[aKey] > 0) el('rect', {x, y:y(r[aKey]), width:inner, height:Math.max((r[aKey]/hi)*plotH,1), fill:aColor, opacity:0.75, rx:1}, svg);
-    if (r[bKey] > 0) el('rect', {x:x+inner+2, y:y(r[bKey]), width:inner, height:Math.max((r[bKey]/hi)*plotH,1), fill:bColor, opacity:0.75, rx:1}, svg);
+    if (r[aKey] > 0) el('rect', {x, y:y(r[aKey]), width:inner, height:Math.max((r[aKey]/hi)*plotH,1), '$fill':'var(--ser-in)',  rx:Math.min(2, inner/2)}, svg);
+    if (r[bKey] > 0) el('rect', {x:x+inner+2, y:y(r[bKey]), width:inner, height:Math.max((r[bKey]/hi)*plotH,1), '$fill':'var(--ser-out)', rx:Math.min(2, inner/2)}, svg);
+  });
+  rows.forEach((r, i) => {
     const hit = el('rect', {x:padL+i*bw, y:padT, width:bw, height:plotH, fill:'transparent'}, svg);
+    const cx = padL + i * bw + bw / 2;
+    hit.addEventListener('mouseenter', () => { cross.setAttribute('x1', cx); cross.setAttribute('x2', cx); cross.setAttribute('opacity', 0.28); });
+    hit.addEventListener('mouseleave', () => cross.setAttribute('opacity', 0));
     hoverable(hit, `<span class="t-h">${r.l}</span><br>${aName} ${fmt(r[aKey])}<br>${bName} ${fmt(r[bKey])}`);
   });
   const every = Math.ceil(rows.length / 12);
   rows.forEach((r, i) => {
     if (i % every) return;
-    el('text', {x:padL+i*bw+bw/2, y:h-padB+12, 'font-family':'DM Mono,monospace', 'font-size':9, fill:'#7a7569', 'text-anchor':'middle'}, svg).textContent = r.l;
+    el('text', Object.assign({x:padL+i*bw+bw/2, y:h-padB+13, '$fill':'var(--muted)', 'text-anchor':'middle'}, AXIS), svg).textContent = r.l;
   });
 }
 
@@ -785,13 +966,15 @@ function accountCard(a, rows, s, saldo, saldoDate) {
   const inL = a.inLabel || 'Indbetalt', outL = a.outLabel || 'Udbetalt';
   const stale = saldoDate ? (Date.now() - Date.parse(saldoDate)) / 864e5 > STALE_DAYS : true;
 
-  let stats = `<div><div class="stat-label">${inL}</div><div class="stat-val green">${fmt(s.ind)}</div></div>
-    <div><div class="stat-label">${outL}</div><div class="stat-val red">${fmt(s.ud)}</div></div>
-    <div><div class="stat-label">Netto</div><div class="stat-val ${s.net>=0?'green':'red'}">${fmt(s.net)}</div></div>`;
+  // Tallene bærer blæk-farve; det er prikken ved etiketten der bærer identiteten.
+  const sw = v => `<span class="sw" style="background:var(--ser-${v})"></span>`;
+  let stats = `<div><div class="stat-label">${sw('in')}${inL}</div><div class="stat-val">${fmt(s.ind)}</div></div>
+    <div><div class="stat-label">${sw('out')}${outL}</div><div class="stat-val">${fmt(s.ud)}</div></div>
+    <div><div class="stat-label">Netto</div><div class="stat-val ${s.net>=0?'pos':'neg'}">${fmt(s.net)}</div></div>`;
   if (a.creditLimit) {
-    stats = `<div><div class="stat-label">Rådighedsbeløb</div><div class="stat-val green" style="font-size:1rem;font-weight:600">${fmt(a.creditLimit + (saldo ?? 0))}</div></div>
-      <div><div class="stat-label">${inL}</div><div class="stat-val green">${fmt(s.ind)}</div></div>
-      <div><div class="stat-label">${outL}</div><div class="stat-val red">${fmt(s.ud)}</div></div>`;
+    stats = `<div><div class="stat-label">Rådighedsbeløb</div><div class="stat-val pos" style="font-size:1rem;font-weight:600">${fmt(a.creditLimit + (saldo ?? 0))}</div></div>
+      <div><div class="stat-label">${sw('in')}${inL}</div><div class="stat-val">${fmt(s.ind)}</div></div>
+      <div><div class="stat-label">${sw('out')}${outL}</div><div class="stat-val">${fmt(s.ud)}</div></div>`;
   }
 
   block.innerHTML = `
@@ -805,17 +988,21 @@ function accountCard(a, rows, s, saldo, saldoDate) {
         <span class="avg-item ${s.avgNet>=0?'pos':'neg'}">${fmt(s.avgNet)}</span></span></div>` : ''}
     <div class="acc-updated ${stale ? 'stale' : ''}"><span class="dot"></span>
       ${saldoDate ? `Opdateret til ${fmtDate(saldoDate)}${stale ? ' — kan være forældet' : ''}` : 'Ingen saldo i data'}</div>
-    <div class="chart-label">Månedlig cashflow</div>
-    <svg class="mini-chart" preserveAspectRatio="none"></svg>
-    <div class="chart-label" style="margin-top:10px">Netto pr. måned</div>
-    <svg class="spark-chart" preserveAspectRatio="none"></svg>`;
+    <div class="only-chart">
+      <div class="chart-label">Månedlig cashflow</div>
+      <svg class="mini-chart" preserveAspectRatio="none" role="img"
+           aria-label="Månedlig cashflow for ${a.name}. Samme tal findes i tabelvisningen."></svg>
+      <div class="chart-label" style="margin-top:10px">Netto pr. måned</div>
+      <svg class="spark-chart" preserveAspectRatio="none" role="img"
+           aria-label="Netto pr. måned for ${a.name}. Samme tal findes i tabelvisningen."></svg>
+    </div>
+    <div class="only-table">${monthTable(rows, inL, outL)}</div>`;
 
-  const every = Math.ceil(rows.length / 10);
+  const every = Math.ceil(rows.length / 8);
   drawBars(block.querySelector('.mini-chart'), rows,
-    {w:420, h:72, padL:30, padR:4, padT:6, padB:16, labelEvery:every,
-     inColor:a.group === 'virk' ? '#1a3a5c' : '#1e6e42'});
+    {w:460, h:80, padL:36, padR:4, padT:6, padB:18, labelEvery:every});
   drawNet(block.querySelector('.spark-chart'), rows,
-    {w:420, h:44, padL:30, padR:4, padT:5, padB:12, labelEvery:every});
+    {w:460, h:54, padL:36, padR:4, padT:5, padB:16, labelEvery:every});
   return block;
 }
 
@@ -833,7 +1020,7 @@ function totalsBlock(container, s, showNetPerMonth) {
       <div class="combined-total-label">${l}</div><div class="combined-total-val ${c}">${v}</div></div>`).join('');
 }
 
-function renderGroup(group, ids, kpiEl, gridEl, countEl, totalsEl, cashSvg, netSvg, inColor) {
+function renderGroup(group, ids, kpiEl, gridEl, countEl, totalsEl, cashSvg, netSvg) {
   const p = currentPeriod();
   const accts = ACCOUNTS.filter(a => ids.includes(a.id));
   kpiEl.innerHTML = ''; gridEl.innerHTML = '';
@@ -856,8 +1043,11 @@ function renderGroup(group, ids, kpiEl, gridEl, countEl, totalsEl, cashSvg, netS
 
   const rows = Object.values(merged).sort((a, b) => a.m.localeCompare(b.m));
   const every = Math.ceil(rows.length / 18);
-  drawBars(cashSvg, rows, {inColor, labelEvery:every});
+  drawBars(cashSvg, rows, {labelEvery:every});
   drawNet(netSvg, rows, {labelEvery:every});
+  const a0 = accts.find(a => a.id === 'drift');
+  cashSvg.closest('.combined-chart-outer').querySelector('.only-table').innerHTML =
+    monthTable(rows, a0 ? 'Omsætning ind' : 'Indbetalt', a0 ? 'Udgifter ud' : 'Udbetalt');
   totalsBlock(totalsEl, summarise(rows), group === 'privat');
 }
 
@@ -870,7 +1060,8 @@ function renderCross() {
   const rows = months.map(m => ({m, l:monthLabel(m), tom:sal[m].tom || 0, hustru:sal[m].hustru || 0}));
   const totTom = rows.reduce((s, r) => s + r.tom, 0);
   const totHus = rows.reduce((s, r) => s + r.hustru, 0);
-  drawPair(document.getElementById('cross-loen'), rows, 'tom', 'hustru', '#1e6e42', '#1a3a5c', 'Tom', 'Hustru');
+  drawPair(document.getElementById('cross-loen'), rows, 'tom', 'hustru', 'Tom', 'Hustru');
+  document.getElementById('loen-table').innerHTML = pairTable(rows, 'tom', 'hustru', 'Tom', 'Hustru');
   document.getElementById('loen-note').textContent =
     `Udledt af posteringstekst på driftskontoen. Gennemsnit er regnet over de ${rows.length} måneder med lønudbetaling — ikke over hele perioden.`;
   document.getElementById('loen-stats').innerHTML = [
@@ -900,7 +1091,8 @@ function renderCross() {
   const nVirk = fullVirk.length, nPriv = fullPriv.length;
   const avgVirk = nVirk ? fullVirk.reduce((s, r) => s + r.ind, 0) / nVirk : 0;
   const avgPriv = nPriv ? fullPriv.reduce((s, r) => s + r.ud, 0) / nPriv : 0;
-  drawPair(document.getElementById('cross-omst'), cmp, 'virk', 'priv', '#1a3a5c', '#c0392b', 'Omsætning', 'Privat ud');
+  drawPair(document.getElementById('cross-omst'), cmp, 'virk', 'priv', 'Omsætning', 'Privat ud');
+  document.getElementById('omst-table').innerHTML = pairTable(cmp, 'virk', 'priv', 'Omsætning ind', 'Privat forbrug ud');
   document.getElementById('omst-note').textContent =
     `Driftskontoens omsætning ind mod forbrug ud på forbrugs-, budget- og hustruens konto. Hvert gennemsnit er regnet over de hele måneder, netop den konto har data i (${nVirk} hhv. ${nPriv} mdr.). Delvise måneder er udeladt af gennemsnittet.`;
   document.getElementById('omst-stats').innerHTML = [
@@ -933,11 +1125,11 @@ function renderAll() {
   renderGroup('privat', ['udlejning','forbrug','budget','frivaerdi','hustru'],
     document.getElementById('privat-kpi'), document.getElementById('privat-grid'),
     document.getElementById('privat-count'), document.getElementById('privat-totals'),
-    document.getElementById('privat-cash'), document.getElementById('privat-net'), '#1e6e42');
+    document.getElementById('privat-cash'), document.getElementById('privat-net'));
   renderGroup('virk', ['drift','skat','klient'],
     document.getElementById('virk-kpi'), document.getElementById('virk-grid'),
     document.getElementById('virk-count'), document.getElementById('virk-totals'),
-    document.getElementById('virk-cash'), document.getElementById('virk-net'), '#1a3a5c');
+    document.getElementById('virk-cash'), document.getElementById('virk-net'));
   renderCross();
   renderImportStatus();
 }
@@ -998,6 +1190,43 @@ clearBtn.addEventListener('click', () => {
 /* ══════════════════════════════════════════════
    11. FANER + START
    ══════════════════════════════════════════════ */
+
+// ── Graf / tabel ──
+document.querySelectorAll('.pill[data-view]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pill[data-view]').forEach(b => {
+      const on = b === btn;
+      b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on));
+    });
+    document.body.classList.toggle('view-table', btn.dataset.view === 'table');
+    hideTip();
+    try { localStorage.setItem('penge.view', btn.dataset.view); } catch {}
+  });
+});
+try {
+  if (localStorage.getItem('penge.view') === 'table')
+    document.querySelector('.pill[data-view="table"]').click();
+} catch {}
+
+// ── Tema ── systemets valg som udgangspunkt, brugerens valg vinder og huskes.
+const themeBtn = document.getElementById('theme-btn');
+function applyTheme(t) {
+  const root = document.documentElement;
+  if (t) root.setAttribute('data-theme', t); else root.removeAttribute('data-theme');
+  const dark = t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  document.getElementById('theme-label').textContent = dark ? 'Mørkt tema' : 'Lyst tema';
+  themeBtn.setAttribute('aria-label', `Skift til ${dark ? 'lyst' : 'mørkt'} tema`);
+}
+let theme = null;
+try { theme = localStorage.getItem('penge.theme'); } catch {}
+applyTheme(theme);
+themeBtn.addEventListener('click', () => {
+  const dark = theme ? theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  theme = dark ? 'light' : 'dark';
+  applyTheme(theme);
+  try { localStorage.setItem('penge.theme', theme); } catch {}
+});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (!theme) applyTheme(null); });
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
