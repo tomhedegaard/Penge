@@ -225,6 +225,56 @@ body.view-table .only-table { display:block; }
 .cross-card .data-table thead th { background:var(--cream); }
 .only-table { max-height:420px; overflow-y:auto; }
 
+/* ── SØGNING OG INDSIGT ── */
+.search-bar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
+.search-input { flex:1 1 320px; min-width:0; font-family:'DM Mono',monospace; font-size:0.72rem; padding:9px 12px;
+  border:1px solid var(--line); background:var(--paper); color:var(--ink); border-radius:2px; }
+.search-input::placeholder { color:var(--muted); }
+.search-bar select { font-family:'DM Mono',monospace; font-size:0.66rem; padding:8px 10px; border:1px solid var(--line);
+  background:var(--paper); color:var(--ink); border-radius:2px; max-width:200px; }
+.search-input:focus-visible, .search-bar select:focus-visible, .chk input:focus-visible { outline:2px solid var(--gold); outline-offset:1px; }
+.chk { display:flex; align-items:center; gap:6px; font-family:'DM Mono',monospace; font-size:0.66rem; color:var(--muted); cursor:pointer; white-space:nowrap; }
+.chk input { accent-color:var(--gold); width:14px; height:14px; }
+.search-summary { font-family:'DM Mono',monospace; font-size:0.66rem; color:var(--muted); margin-bottom:12px; line-height:1.7; }
+.search-summary b { color:var(--ink); font-weight:500; }
+.search-summary .warn { color:var(--badge-gold-fg); background:var(--badge-gold-bg); padding:2px 7px; border-radius:2px; }
+
+.tx-table { width:100%; border-collapse:collapse; font-family:'DM Mono',monospace; font-size:0.68rem; }
+.tx-table th, .tx-table td { padding:7px 10px; border-bottom:1px solid var(--line); text-align:left; font-weight:400; vertical-align:top; }
+.tx-table thead th { color:var(--muted); font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase;
+  border-bottom:1px solid var(--muted); position:sticky; top:0; background:var(--paper); z-index:2; }
+.tx-table td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.tx-table td.num.pos { color:var(--pos); } .tx-table td.num.neg { color:var(--neg); }
+.tx-table tbody tr:hover { background:var(--cream); }
+.tx-table .tx-date { white-space:nowrap; color:var(--muted); }
+.tx-table .tx-text { max-width:420px; overflow-wrap:anywhere; }
+.tx-cat { font-size:0.6rem; letter-spacing:0.06em; text-transform:uppercase; padding:2px 7px; border-radius:2px;
+  background:var(--badge-bg); color:var(--badge-fg); white-space:nowrap; }
+.tx-cat.is-intern { background:var(--cream); color:var(--muted); border:1px solid var(--line); }
+.tx-wrap { max-height:560px; overflow:auto; border:1px solid var(--line); }
+.tx-more { font-family:'DM Mono',monospace; font-size:0.63rem; color:var(--muted); padding:10px; text-align:center; }
+
+.insight-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:24px; margin-top:46px; }
+.cat-row { display:grid; grid-template-columns:1fr auto; gap:4px 12px; align-items:center; margin-bottom:11px; }
+.cat-name { font-family:'DM Mono',monospace; font-size:0.66rem; color:var(--ink); }
+.cat-val { font-family:'DM Mono',monospace; font-size:0.66rem; color:var(--ink); font-variant-numeric:tabular-nums; }
+.cat-track { grid-column:1 / -1; height:9px; background:var(--cream); border-radius:2px; overflow:hidden; }
+.cat-fill { height:100%; background:var(--ser-out); border-radius:2px; }
+.cat-sub { grid-column:1 / -1; font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--muted); margin-top:-2px; }
+
+.fast-table { width:100%; border-collapse:collapse; font-family:'DM Mono',monospace; font-size:0.66rem; }
+.fast-table th, .fast-table td { padding:6px 8px; border-bottom:1px solid var(--line); text-align:left; font-weight:400; }
+.fast-table thead th { color:var(--muted); font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; }
+.fast-table td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.fast-total { margin-top:14px; padding-top:12px; border-top:1px solid var(--line); display:flex; justify-content:space-between;
+  font-family:'DM Mono',monospace; font-size:0.72rem; }
+.fast-total b { font-weight:500; }
+.forecast { font-family:'DM Mono',monospace; font-size:0.57rem; color:var(--muted); margin-bottom:12px;
+  padding:6px 10px; background:var(--cream); border-left:2px solid var(--line); line-height:1.6; }
+
+.notice { margin:0 60px 0; padding:10px 14px; background:var(--badge-gold-bg); color:var(--badge-gold-fg);
+  font-family:'DM Mono',monospace; font-size:0.64rem; border-radius:2px; }
+
 /* ── RESPONSIVT ── */
 @media (max-width: 1100px) {
   header, .tab-bar, .period-bar, .import-bar, .content, footer { padding-left:32px; padding-right:32px; }
@@ -252,6 +302,12 @@ body.view-table .only-table { display:block; }
   .combined-total-item[style] { border-left:none !important; padding-left:0 !important; }
   .acc-stats { gap:8px; }
   .avg-row { flex-direction:column; align-items:flex-start; gap:5px; }
+  .search-bar select, .search-input { flex:1 1 100%; max-width:none; font-size:0.74rem; }
+  .insight-grid { grid-template-columns:1fr; gap:16px; margin-top:32px; }
+  .tx-table .tx-text { max-width:none; }
+  .tx-table th, .tx-table td { padding:6px 7px; }
+  .tx-table { font-size:0.72rem; }
+  .notice { margin-left:20px; margin-right:20px; }
   .cross-stat-row { flex-wrap:wrap; gap:14px; }
   .big-chart { height:200px; } .net-chart { height:130px; } .cross-chart { height:170px; }
   /* Ingen tekst under ~11px på en telefon. */
@@ -297,6 +353,9 @@ body.view-table .only-table { display:block; }
   <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-tvaer" id="tab-tvaer" data-tab="tvaer">
     <span class="tab-dot" style="background:var(--gold)"></span>Tværsnit
   </button>
+  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-poster" id="tab-poster" data-tab="poster">
+    <span class="tab-dot" style="background:var(--muted)"></span>Posteringer
+  </button>
 </div>
 
 <div class="period-bar">
@@ -319,6 +378,7 @@ body.view-table .only-table { display:block; }
   <span class="import-status" id="import-status"></span>
   <button class="btn-ghost" id="clear-import" hidden>Ryd importeret data</button>
 </div>
+<div class="notice" id="notice" role="status" hidden></div>
 
 <div class="panel active" id="panel-privat" role="tabpanel" aria-labelledby="tab-privat">
   <div class="kpi-strip" id="privat-kpi"></div>
@@ -430,6 +490,43 @@ body.view-table .only-table { display:block; }
   </div>
 </div>
 
+<div class="panel" id="panel-poster" role="tabpanel" aria-labelledby="tab-poster">
+  <div class="content" style="padding-top:34px">
+    <div class="section-head" style="padding-top:0"><span class="section-num">Søg</span><h2>Posteringer</h2></div>
+
+    <div class="search-bar">
+      <input type="search" id="q" class="search-input" autocomplete="off"
+             placeholder="Søg i tekst, beløb eller kategori — fx «inforevision» eller «13750»"
+             aria-label="Søg i posteringer">
+      <select id="f-acct" aria-label="Filtrér på konto"></select>
+      <select id="f-cat" aria-label="Filtrér på kategori"></select>
+      <select id="f-type" aria-label="Filtrér på retning">
+        <option value="all">Ind og ud</option>
+        <option value="in">Kun indbetalinger</option>
+        <option value="out">Kun udbetalinger</option>
+      </select>
+      <label class="chk"><input type="checkbox" id="f-intern" checked> Skjul interne overførsler</label>
+      <button class="btn-ghost" id="q-reset">Nulstil</button>
+    </div>
+
+    <div class="search-summary" id="q-summary"></div>
+    <div id="q-results"></div>
+
+    <div class="insight-grid">
+      <div class="cross-card">
+        <h3>Hvad pengene går til</h3>
+        <div class="cross-note" id="cat-note"></div>
+        <div id="cat-chart"></div>
+      </div>
+      <div class="cross-card">
+        <h3>Faste udgifter</h3>
+        <div class="cross-note" id="fast-note"></div>
+        <div id="fast-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="tip" role="status" aria-live="polite"></div>
 
 <footer>
@@ -468,6 +565,29 @@ const SALARY = {
   fallback: 'hustru',                  // lønposteringer uden navn
 };
 const STALE_DAYS = 45;                 // konto markeres forældet efter så mange dage
+
+// Kategorier afgøres på posteringsteksten, første regel der matcher vinder.
+// Tilføj eller ret frit — rækkefølgen er prioriteten.
+const CATEGORIES = [
+  {id:'skat',       label:'Skat & moms',     match:/\b(skat|moms|told)\b/i},
+  {id:'raadgiv',    label:'Revision & råd.', match:/revision|advokat|bogføring|konsulent/i},
+  {id:'bolig',      label:'Bolig',           match:/husleje|realkredit|termin|grundejer|ejendom|hofor|vand|radius|\bel\b|varme|antenne|kontorleje/i},
+  {id:'dagligvare', label:'Dagligvarer',     match:/nemlig|rema|netto\b|føtex|foetex|bilka|coop|meny|lidl|aldi|salling|brugsen|wolt|just ?eat|hobbii/i},
+  {id:'abonnement', label:'Abonnementer',    match:/spotify|netflix|hbo|viaplay|disney|apple|google|microsoft|adobe|tdc|yousee|telia|telenor|mobil/i},
+  {id:'transport',  label:'Transport',       match:/dsb|rejsekort|circle ?k|shell|q8|ok benzin|uno-?x|brobizz|parkering|taxa|færge/i},
+  {id:'forsikring', label:'Forsikring',      match:/forsikring|\btryg\b|topdanmark|alka|codan/i},
+  {id:'gebyr',      label:'Gebyrer & renter',match:/gebyr|rente|provision|\bpbs\b/i},
+  {id:'klient',     label:'Klientmidler',    match:/klient/i},
+  {id:'faktura',    label:'Fakturering',     match:/faktura|honorar/i},
+  {id:'ovrigt',     label:'Øvrigt',          match:/.*/},
+];
+const CAT_BY_ID = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
+const INTERNAL_DAYS = 3;   // modpostering må ligge så mange dage fra hinanden
+const FIXED_MIN_MONTHS = 3;   // en udgift er "fast" når den er set i så mange måneder
+const FIXED_MAX_SPREAD = 0.15; // ... og beløbet svinger under så meget (std/gns.),
+                               // så et el- eller vandregning med udsving stadig
+                               // tæller med, mens dagligvarer og klientudbetalinger
+                               // ryger ud som variable.
 
 /* ══════════════════════════════════════════════
    2. SEED — månedstal fra tidligere eksporter
@@ -621,6 +741,35 @@ function monthRange(from, to) {
 const MON = ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
 const monthLabel = m => `${MON[+m.slice(5,7)-1]} ${m.slice(2,4)}`;
 
+// Markerer interne overførsler og sætter kategori på hver postering.
+// Intern = en modpostering med præcis modsat beløb på en AF DINE ANDRE konti
+// inden for få dage. Det fanger løn, skatteoverførsler og flytninger mellem
+// budget og forbrug, uden at gætte ud fra teksten.
+function enrichTxs() {
+  const byAmt = new Map();
+  for (const t of Store.txs) {
+    t.internal = false;
+    t.cat = (CATEGORIES.find(c => c.match.test(t.t)) || CAT_BY_ID.ovrigt).id;
+    const k = Math.round(Math.abs(t.v) * 100);
+    if (!byAmt.has(k)) byAmt.set(k, []);
+    byAmt.get(k).push(t);
+  }
+  for (const list of byAmt.values()) {
+    if (list.length < 2) continue;
+    for (let i = 0; i < list.length; i++) {
+      const a = list[i];
+      if (a.internal) continue;
+      for (let j = i + 1; j < list.length; j++) {
+        const b = list[j];
+        if (b.internal || a.a === b.a || (a.v < 0) === (b.v < 0)) continue;
+        if (Math.abs(Date.parse(a.d) - Date.parse(b.d)) > INTERNAL_DAYS * 864e5) continue;
+        a.internal = b.internal = true;
+        break;
+      }
+    }
+  }
+}
+
 // Bygger for hver konto: måned → {ind, ud, src, partial}
 let MODEL = null;
 function buildModel() {
@@ -742,6 +891,8 @@ const rangeLabel = p => p.from === p.to ? monthLabel(p.from) : `${monthLabel(p.f
 const fmt = n => (n < 0 ? '−' : '') + Math.abs(Math.round(n)).toLocaleString('da-DK') + ' kr.';
 // Et gennemsnit uden hele måneder bag sig er ikke nul — det findes ikke.
 const fmtAvg = (v, n) => n ? fmt(v) : '—';
+// Posteringstekst kommer fra banken og sættes ind som HTML — den skal escapes.
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtK = n => { const a = Math.abs(n); if (a >= 1000) return (n<0?'−':'') + Math.round(a/1000) + 'k'; return String(Math.round(n)); };
 const fmtDate = d => { const [y,m,dd] = d.split('-'); return `${+dd}. ${MON[+m-1]} ${y}`; };
 
@@ -849,6 +1000,7 @@ function drawBars(svg, rows, opts) {
     hoverable(hit, r.has
       ? `<span class="t-h">${r.l}${r.partial ? ' · delvis måned' : ''}</span><br>Ind &nbsp;${fmt(r.ind)}<br>Ud &nbsp;&nbsp;${fmt(r.ud)}<br>Netto ${fmt(r.ind-r.ud)}`
       : `<span class="t-h">${r.l}</span><br>Ingen posteringer`);
+    if (o.onPick) { hit.style.cursor = 'pointer'; hit.addEventListener('click', () => o.onPick(r.m)); }
   });
 
   rows.forEach((r, i) => {
@@ -901,6 +1053,7 @@ function drawNet(svg, rows, opts) {
     hoverable(hit, r.has
       ? `<span class="t-h">${r.l}${r.partial ? ' · delvis måned' : ''}</span><br>Netto ${fmt(r.ind-r.ud)}`
       : `<span class="t-h">${r.l}</span><br>Ingen posteringer`);
+    if (o.onPick) { hit.style.cursor = 'pointer'; hit.addEventListener('click', () => o.onPick(r.m)); }
     if (i % o.labelEvery === 0)
       el('text', Object.assign({x:cx, y:o.h-o.padB+13, '$fill':'var(--muted)', 'text-anchor':'middle'}, AXIS), svg).textContent = r.l;
   });
@@ -960,6 +1113,19 @@ function kpiCard(a, s, saldo, saldoDate) {
   return d;
 }
 
+// Ren fremskrivning af de seneste hele måneders nettotempo — ikke et budget,
+// og den ved intet om kommende regninger. Vises kun med nok måneder bag sig.
+function forecast(rows, saldo) {
+  if (saldo === null) return '';
+  const full = rows.filter(r => r.has && !r.partial).slice(-6);
+  if (full.length < 3) return '';
+  const per = full.reduce((s, r) => s + (r.ind - r.ud), 0) / full.length;
+  if (Math.abs(per) < 1) return '';
+  return `<div class="forecast">Fortsætter de seneste ${full.length} hele måneders tempo
+    (${fmt(per)}/mdr.), står saldoen om 3 mdr. i ca. <b>${fmt(saldo + per * 3)}</b> —
+    ren fremskrivning, ikke et budget, og den kender ikke kommende regninger.</div>`;
+}
+
 function accountCard(a, rows, s, saldo, saldoDate) {
   const block = document.createElement('div');
   block.className = 'account-block';
@@ -988,6 +1154,7 @@ function accountCard(a, rows, s, saldo, saldoDate) {
         <span class="avg-item ${s.avgNet>=0?'pos':'neg'}">${fmt(s.avgNet)}</span></span></div>` : ''}
     <div class="acc-updated ${stale ? 'stale' : ''}"><span class="dot"></span>
       ${saldoDate ? `Opdateret til ${fmtDate(saldoDate)}${stale ? ' — kan være forældet' : ''}` : 'Ingen saldo i data'}</div>
+    ${forecast(rows, saldo)}
     <div class="only-chart">
       <div class="chart-label">Månedlig cashflow</div>
       <svg class="mini-chart" preserveAspectRatio="none" role="img"
@@ -999,10 +1166,11 @@ function accountCard(a, rows, s, saldo, saldoDate) {
     <div class="only-table">${monthTable(rows, inL, outL)}</div>`;
 
   const every = Math.ceil(rows.length / 8);
+  const pick = m => openMonth(m, a.id);
   drawBars(block.querySelector('.mini-chart'), rows,
-    {w:460, h:80, padL:36, padR:4, padT:6, padB:18, labelEvery:every});
+    {w:460, h:80, padL:36, padR:4, padT:6, padB:18, labelEvery:every, onPick:pick});
   drawNet(block.querySelector('.spark-chart'), rows,
-    {w:460, h:54, padL:36, padR:4, padT:5, padB:16, labelEvery:every});
+    {w:460, h:54, padL:36, padR:4, padT:5, padB:16, labelEvery:every, onPick:pick});
   return block;
 }
 
@@ -1043,8 +1211,8 @@ function renderGroup(group, ids, kpiEl, gridEl, countEl, totalsEl, cashSvg, netS
 
   const rows = Object.values(merged).sort((a, b) => a.m.localeCompare(b.m));
   const every = Math.ceil(rows.length / 18);
-  drawBars(cashSvg, rows, {labelEvery:every});
-  drawNet(netSvg, rows, {labelEvery:every});
+  drawBars(cashSvg, rows, {labelEvery:every, onPick:m => openMonth(m)});
+  drawNet(netSvg, rows, {labelEvery:every, onPick:m => openMonth(m)});
   const a0 = accts.find(a => a.id === 'drift');
   cashSvg.closest('.combined-chart-outer').querySelector('.only-table').innerHTML =
     monthTable(rows, a0 ? 'Omsætning ind' : 'Indbetalt', a0 ? 'Udgifter ud' : 'Udbetalt');
@@ -1102,6 +1270,159 @@ function renderCross() {
   ].map(([l, v, c]) => `<div class="cross-stat"><div class="cross-stat-label">${l}</div><div class="cross-stat-val ${c}">${v}</div></div>`).join('');
 }
 
+/* ══════════════════════════════════════════════
+   POSTERINGER — søgning, kategorier, faste udgifter
+   ══════════════════════════════════════════════ */
+
+const QS = {q:'', acct:'', cat:'', type:'all', hideInternal:true, month:''};
+const MAX_ROWS = 300;
+const normKey = s => s.toLowerCase().replace(/\d+/g, ' ').replace(/[^a-zæøå ]/g, ' ')
+                      .replace(/\s+/g, ' ').trim().slice(0, 26);
+
+function baseTxs() {
+  const p = currentPeriod();
+  return Store.txs.filter(t => {
+    const m = ym(t.d);
+    if (QS.month ? m !== QS.month : (m < p.from || m > p.to)) return false;
+    if (QS.acct && t.a !== QS.acct) return false;
+    if (QS.type === 'in'  && t.v < 0)  return false;
+    if (QS.type === 'out' && t.v >= 0) return false;
+    return true;
+  });
+}
+function searchTxs() {
+  const q = QS.q.trim().toLowerCase();
+  const num = /^[\d.,\s]+$/.test(q) && q ? Math.abs(parseAmount(q) ?? NaN) : NaN;
+  return baseTxs().filter(t => {
+    if (QS.hideInternal && t.internal) return false;
+    if (QS.cat && t.cat !== QS.cat) return false;
+    if (!q) return true;
+    if (!Number.isNaN(num) && Math.abs(Math.abs(t.v) - num) < 0.5) return true;
+    return (t.t + ' ' + BY_ID[t.a].name + ' ' + CAT_BY_ID[t.cat].label).toLowerCase().includes(q);
+  }).sort((a, b) => b.d.localeCompare(a.d) || Math.abs(b.v) - Math.abs(a.v));
+}
+
+function renderSearch() {
+  const rows = searchTxs();
+  const ind = rows.filter(t => t.v > 0).reduce((s, t) => s + t.v, 0);
+  const ud  = rows.filter(t => t.v < 0).reduce((s, t) => s - t.v, 0);
+  const sum = document.getElementById('q-summary');
+  const res = document.getElementById('q-results');
+
+  // Søgning kan kun se importerede posteringer — de gemte månedstal har ingen detaljer.
+  const cover = Store.txs.length
+    ? `Søger i <b>${Store.txs.length}</b> importerede posteringer fra <b>${fmtDate(Store.txs[0].d)}</b> til <b>${fmtDate(Store.txs[Store.txs.length-1].d)}</b>.`
+    : '';
+  const bits = [];
+  if (QS.month) bits.push(`<span class="warn">Kun ${monthLabel(QS.month)}</span>`);
+  bits.push(`<b>${rows.length}</b> posteringer · ind <b>${fmt(ind)}</b> · ud <b>${fmt(ud)}</b> · netto <b>${fmt(ind-ud)}</b>`);
+
+  if (!Store.txs.length) {
+    sum.innerHTML = '<span class="warn">Ingen importerede posteringer endnu</span> — de gemte månedstal indeholder kun summer pr. måned, ikke de enkelte posteringer. Træk en CSV-eksport ind foroven for at kunne søge.';
+    res.innerHTML = '';
+    return;
+  }
+  sum.innerHTML = bits.join(' &nbsp;·&nbsp; ') + '<br>' + cover +
+    ' Perioden følger valget foroven.' +
+    (QS.hideInternal ? ' Interne overførsler mellem dine egne konti er skjult.' : '');
+
+  if (!rows.length) {
+    // Uden for det importerede vindue findes kun månedssummer — sig det,
+    // i stedet for at lade et tomt resultat ligne "det er der ikke".
+    const first = ym(Store.txs[0].d), last = ym(Store.txs[Store.txs.length-1].d);
+    const outside = QS.month && (QS.month < first || QS.month > last);
+    res.innerHTML = `<div class="tx-more">${outside
+      ? `${monthLabel(QS.month)} ligger uden for de importerede posteringer (${monthLabel(first)} – ${monthLabel(last)}). For den måned findes kun en månedssum, ikke de enkelte posteringer.`
+      : 'Ingen posteringer matcher.'}</div>`;
+    return;
+  }
+  const shown = rows.slice(0, MAX_ROWS);
+  res.innerHTML = `<div class="tx-wrap"><table class="tx-table">
+    <thead><tr><th>Dato</th><th>Konto</th><th>Tekst</th><th>Kategori</th><th style="text-align:right">Beløb</th><th style="text-align:right">Saldo</th></tr></thead>
+    <tbody>${shown.map(t => `<tr>
+      <td class="tx-date">${fmtDate(t.d)}</td>
+      <td>${BY_ID[t.a].name}</td>
+      <td class="tx-text">${esc(t.t) || '—'}</td>
+      <td><span class="tx-cat ${t.internal ? 'is-intern' : ''}">${t.internal ? 'Intern overførsel' : CAT_BY_ID[t.cat].label}</span></td>
+      <td class="num ${t.v >= 0 ? 'pos' : 'neg'}">${fmt(t.v)}</td>
+      <td class="num">${t.s === null ? '—' : fmt(t.s)}</td></tr>`).join('')}</tbody></table>
+    ${rows.length > MAX_ROWS ? `<div class="tx-more">Viser de ${MAX_ROWS} nyeste af ${rows.length} — snævr søgningen ind for at se resten.</div>` : ''}
+  </div>`;
+}
+
+function renderCategories() {
+  const rows = baseTxs().filter(t => !t.internal && t.v < 0 && (!QS.cat || t.cat === QS.cat));
+  const by = {};
+  for (const t of rows) by[t.cat] = (by[t.cat] || 0) + -t.v;
+  const list = Object.entries(by).sort((a, b) => b[1] - a[1]);
+  const total = list.reduce((s, x) => s + x[1], 0);
+  const note = document.getElementById('cat-note');
+  const wrap = document.getElementById('cat-chart');
+  if (!list.length) {
+    note.textContent = 'Kræver importerede posteringer i den valgte periode.';
+    wrap.innerHTML = ''; return;
+  }
+  note.textContent = `Udbetalinger fordelt på kategori, ${fmt(total)} i alt. Interne overførsler mellem egne konti tæller ikke med. Kategorierne sættes ud fra posteringsteksten.`;
+  const max = list[0][1];
+  wrap.innerHTML = list.map(([id, v]) => `<div class="cat-row">
+      <div class="cat-name">${CAT_BY_ID[id].label}</div>
+      <div class="cat-val">${fmt(v)}</div>
+      <div class="cat-track"><div class="cat-fill" style="width:${(v/max*100).toFixed(1)}%"></div></div>
+      <div class="cat-sub">${(v/total*100).toFixed(1)} % af udbetalingerne</div>
+    </div>`).join('');
+}
+
+function renderFixed() {
+  const rows = baseTxs().filter(t => !t.internal && t.v < 0);
+  const groups = {};
+  for (const t of rows) {
+    const k = normKey(t.t) || '(uden tekst)';
+    const g = groups[k] || (groups[k] = {k, label:t.t, months:new Set(), amounts:[], total:0, cat:t.cat});
+    g.months.add(ym(t.d)); g.total += -t.v; g.amounts.push(-t.v);
+  }
+  // "Fast" kræver både at udgiften går igen OG at beløbet ligger nogenlunde
+  // fast. Uden det havner variable poster som dagligvarer og klientudbetalinger
+  // på listen, bare fordi teksten er den samme hver måned.
+  let variable = 0;
+  const fixed = [];
+  for (const g of Object.values(groups)) {
+    if (g.months.size < FIXED_MIN_MONTHS) continue;
+    // Spredningen måles på de enkelte træk, ikke på månedssummen: et par
+    // klientudbetalinger kan give en jævn månedssum og alligevel svinge vildt.
+    const mean = g.amounts.reduce((s, v) => s + v, 0) / g.amounts.length;
+    const sd = Math.sqrt(g.amounts.reduce((s, v) => s + (v - mean) ** 2, 0) / g.amounts.length);
+    if (mean > 0 && sd / mean > FIXED_MAX_SPREAD) { variable++; continue; }
+    fixed.push({...g, nMonths:g.months.size, per:g.total / g.months.size});
+  }
+  fixed.sort((a, b) => b.per - a.per);
+  const note = document.getElementById('fast-note');
+  const wrap = document.getElementById('fast-list');
+  if (!fixed.length) {
+    note.textContent = `Udgifter der går igen i mindst ${FIXED_MIN_MONTHS} forskellige måneder. Ingen fundet i den valgte periode — prøv en længere periode.`;
+    wrap.innerHTML = ''; return;
+  }
+  const sum = fixed.reduce((s, g) => s + g.per, 0);
+  note.textContent = `Samme modtager i mindst ${FIXED_MIN_MONTHS} forskellige måneder, og med et beløb der ligger nogenlunde fast.` +
+    (variable ? ` ${variable} tilbagevendende udgift${variable === 1 ? '' : 'er'} med for svingende beløb er udeladt — de tælles som variable.` : '');
+  wrap.innerHTML = `<table class="fast-table">
+    <thead><tr><th>Modtager</th><th style="text-align:right">Mdr.</th><th style="text-align:right">Gns./mdr.</th></tr></thead>
+    <tbody>${fixed.slice(0, 14).map(g => `<tr>
+      <td>${esc(g.label)}</td><td class="num">${g.nMonths}</td><td class="num">${fmt(g.per)}</td></tr>`).join('')}</tbody></table>
+    <div class="fast-total"><span>Faste udgifter i alt pr. måned</span><b>${fmt(sum)}</b></div>`;
+}
+
+function renderPoster() { renderSearch(); renderCategories(); renderFixed(); }
+
+// Klik på en måned i en graf åbner posteringerne for netop den måned.
+function openMonth(m, acctId) {
+  QS.month = m; QS.acct = acctId || ''; QS.q = '';
+  document.getElementById('q').value = '';
+  document.getElementById('f-acct').value = QS.acct;
+  document.querySelector('.tab-btn[data-tab="poster"]').click();
+  renderPoster();
+  document.getElementById('panel-poster').scrollIntoView({block:'start', behavior:'smooth'});
+}
+
 function renderPills() {
   const wrap = document.getElementById('period-pills');
   wrap.innerHTML = '';
@@ -1109,12 +1430,13 @@ function renderPills() {
     const b = document.createElement('button');
     b.className = 'pill' + (d.id === PERIOD ? ' active' : '');
     b.textContent = d.label; b.dataset.period = d.id;
-    b.addEventListener('click', () => { PERIOD = d.id; renderAll(); });
+    b.addEventListener('click', () => { PERIOD = d.id; QS.month = ''; renderAll(); });
     wrap.appendChild(b);
   }
 }
 
 function renderAll() {
+  enrichTxs();
   MODEL = buildModel();
   if (!MODEL.last) return;
   renderPills();
@@ -1131,7 +1453,38 @@ function renderAll() {
     document.getElementById('virk-count'), document.getElementById('virk-totals'),
     document.getElementById('virk-cash'), document.getElementById('virk-net'));
   renderCross();
+  renderFilters();
+  renderPoster();
+  renderNotice();
   renderImportStatus();
+}
+
+// Selects fyldes fra data, så de altid matcher det importerede.
+function renderFilters() {
+  const acctSel = document.getElementById('f-acct'), catSel = document.getElementById('f-cat');
+  const used = new Set(Store.txs.map(t => t.a));
+  acctSel.innerHTML = '<option value="">Alle konti</option>' +
+    ACCOUNTS.filter(a => used.has(a.id)).map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+  acctSel.value = QS.acct;
+  const cats = new Set(Store.txs.filter(t => !t.internal).map(t => t.cat));
+  catSel.innerHTML = '<option value="">Alle kategorier</option>' +
+    CATEGORIES.filter(c => cats.has(c.id)).map(c => `<option value="${c.id}">${c.label}</option>`).join('');
+  catSel.value = QS.cat;
+}
+
+// Advarsel når det nyeste data er ved at være gammelt.
+function renderNotice() {
+  const el = document.getElementById('notice');
+  const newest = ACCOUNTS.map(a => MODEL.acct[a.id].saldoDate).filter(Boolean).sort().pop();
+  const days = newest ? Math.floor((Date.now() - Date.parse(newest)) / 864e5) : null;
+  if (days === null || days <= STALE_DAYS) { el.hidden = true; return; }
+  const stale = ACCOUNTS.filter(a => {
+    const d = MODEL.acct[a.id].saldoDate;
+    return d && (Date.now() - Date.parse(d)) / 864e5 > STALE_DAYS;
+  }).map(a => a.name);
+  el.hidden = false;
+  el.textContent = `Nyeste postering er ${days} dage gammel (${fmtDate(newest)}). ` +
+    (stale.length ? `Forældet på: ${stale.join(', ')}. ` : '') + 'Træk en frisk CSV-eksport ind for at opdatere.';
 }
 
 /* ══════════════════════════════════════════════
@@ -1190,6 +1543,28 @@ clearBtn.addEventListener('click', () => {
 /* ══════════════════════════════════════════════
    11. FANER + START
    ══════════════════════════════════════════════ */
+
+// ── Søgefiltre ──
+{
+  const q = document.getElementById('q');
+  let timer = null;
+  q.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { QS.q = q.value; renderPoster(); }, 140);
+  });
+  const bind = (id, key) => document.getElementById(id).addEventListener('change', e => {
+    QS[key] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    renderPoster();
+  });
+  bind('f-acct', 'acct'); bind('f-cat', 'cat'); bind('f-type', 'type'); bind('f-intern', 'hideInternal');
+  document.getElementById('q-reset').addEventListener('click', () => {
+    Object.assign(QS, {q:'', acct:'', cat:'', type:'all', hideInternal:true, month:''});
+    q.value = '';
+    document.getElementById('f-type').value = 'all';
+    document.getElementById('f-intern').checked = true;
+    renderFilters(); renderPoster();
+  });
+}
 
 // ── Graf / tabel ──
 document.querySelectorAll('.pill[data-view]').forEach(btn => {
